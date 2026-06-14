@@ -14,10 +14,10 @@ def produto_existente(auth_token):
         "quantidade": 100
     }
 
+    headers = {"Authorization": auth_token}
+
     response = requests.post(
-        f"{ENDPOINT}/produtos",
-        json=payload,
-        headers={"Authorization": auth_token}
+        f"{ENDPOINT}/produtos",json=payload, headers=headers
     )
 
     assert response.status_code == 201

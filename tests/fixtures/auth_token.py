@@ -1,4 +1,6 @@
 import pytest
+import requests
+
 from tests.config.settings import *
 
 
