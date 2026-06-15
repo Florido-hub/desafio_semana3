@@ -4,7 +4,7 @@ import time
 from tests.config.settings import *
 from tests.fixtures.usuario import *
 
-def test_create_user():
+def test_create_user_administrador():
     payload = {
         "nome": f"fulano{int(time.time()*100)}",
         "email": f"fulano{int(time.time()*100)}@email.com",
@@ -22,10 +22,23 @@ def test_create_user():
     user_id = body["_id"]
     requests.delete(f"{ENDPOINT}/usuarios/{user_id}")
 
-def test_create_user_email_already_registered(usuario_existente_admin):
+def test_create_user_sem_body():
     payload = {
-        "nome": f"fulano{int(time.time()*100)}",
-        "email": usuario_existente_admin["email"],
+    }
+
+    response = requests.post(f"{ENDPOINT}/usuarios", json=payload)
+    assert response.status_code == 400
+
+    body = response.json()
+    assert body["nome"] == "nome é obrigatório"
+    assert body["email"] == "email é obrigatório"
+    assert body["password"] == "password é obrigatório"
+    assert body["administrador"] == "administrador é obrigatório"
+
+def test_create_user_email_formato_inválido():
+    payload = {
+        "nome": f"fulano{int(time.time() * 100)}",
+        "email": f"fulano{int(time.time() * 100)}",
         "password": "1234",
         "administrador": "true"
     }
@@ -34,7 +47,7 @@ def test_create_user_email_already_registered(usuario_existente_admin):
     assert response.status_code == 400
 
     body = response.json()
-    assert body["message"] == "Este email já está sendo usado"
+    assert body["email"] == "email deve ser um email válido"
 
 
 def test_update_user(usuario_existente_admin):

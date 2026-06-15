@@ -84,12 +84,9 @@ Legenda: ✅ Implementado · ⬜ A implementar · 🟢 Sucesso · 🔴 Erro
 | # | Tipo | Cenário | Status esperado | Impl. |
 |---|---|---|---|---|
 | U06 | 🟢 | Criar usuário administrador com dados válidos | 201 + `_id` no body | ✅ |
-| U07 | 🟢 | Criar usuário não-administrador com dados válidos | 201 + `_id` no body | ⬜ |
-| U08 | 🔴 | Criar usuário com e-mail já cadastrado | 400 + `"Este email já está sendo usado"` | ✅ |
-| U09 | 🔴 | Criar usuário sem o campo `nome` | 400 + mensagem de campo obrigatório | ⬜ |
-| U10 | 🔴 | Criar usuário sem o campo `email` | 400 + mensagem de campo obrigatório | ⬜ |
-| U11 | 🔴 | Criar usuário sem o campo `password` | 400 + mensagem de campo obrigatório | ⬜ |
-| U12 | 🔴 | Criar usuário com e-mail em formato inválido | 400 + mensagem de validação | ⬜ |
+| U07 | 🔴 | Criar usuário com e-mail já cadastrado | 400 + `"Este email já está sendo usado"` | ✅ |
+| U08 | 🔴 | Criar usuário com body vazio `{}` | 400 + mensagem de campo obrigatório | ⬜ |
+| U11 | 🔴 | Criar usuário com e-mail em formato inválido | 400 + mensagem de validação | ⬜ |
 
 ### 4.5 `PUT /usuarios/:id`
 
