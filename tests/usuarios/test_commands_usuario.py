@@ -22,10 +22,10 @@ def test_create_user():
     user_id = body["_id"]
     requests.delete(f"{ENDPOINT}/usuarios/{user_id}")
 
-def test_create_user_email_already_registered(usuario_existente):
+def test_create_user_email_already_registered(usuario_existente_admin):
     payload = {
         "nome": f"fulano{int(time.time()*100)}",
-        "email": usuario_existente["email"],
+        "email": usuario_existente_admin["email"],
         "password": "1234",
         "administrador": "true"
     }
@@ -35,3 +35,27 @@ def test_create_user_email_already_registered(usuario_existente):
 
     body = response.json()
     assert body["message"] == "Este email já está sendo usado"
+
+
+def test_update_user(usuario_existente_admin):
+    update_payload = {
+        "nome": "Nome atualizado",
+        "email": usuario_existente_admin["email"],
+        "password": usuario_existente_admin["password"],
+        "administrador": usuario_existente_admin["administrador"]
+    }
+
+    response = requests.put(f"{ENDPOINT}/usuarios/{usuario_existente_admin['_id']}",json=update_payload)
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["message"] == "Registro alterado com sucesso"
+
+
+def test_delete_user_sucess(usuario_existente_admin):
+    response = requests.delete(f"{ENDPOINT}/usuarios/{usuario_existente_admin['_id']}")
+    assert response.status_code == 200
+
+    body = response.json()
+    mensagem = ["Registro excluído com sucesso", "Nenhum registro excluído"]
+    assert body["message"] in mensagem

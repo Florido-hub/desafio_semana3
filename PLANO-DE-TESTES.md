@@ -28,7 +28,8 @@ Validar o comportamento da API ServeRest (`https://compassuol.serverest.dev/`) n
 - `GET /usuarios` — listagem de usuários
 - `GET /usuarios/:id` — busca por ID (sucesso e ID inexistente)
 - `POST /usuarios` — cadastro de usuário (sucesso e e-mail duplicado)
-- `DELETE /usuarios/:id` — remoção de usuário (via teardown de fixture)
+- `PUT /usuarios/:id` — atualização de usuário (sucesso)
+- `DELETE /usuarios/:id` — remoção de usuário (via teardown de fixture e teste explícito)
 - `GET /produtos` — listagem de produtos
 - `GET /produtos/:id` — busca de produto por ID
 - `POST /produtos` — cadastro de produto (admin e não-admin)
@@ -42,7 +43,6 @@ Validar o comportamento da API ServeRest (`https://compassuol.serverest.dev/`) n
 - `POST /carrinhos` — não implementado ainda
 - `DELETE /carrinhos/concluir-compra` — não implementado ainda
 - `DELETE /carrinhos/cancelar-compra` — não implementado ainda
-- `PUT /usuarios/:id` — atualização de usuário não implementada
 - Testes de carga ou performance
 - Testes de contrato (schema validation) — identificado como melhoria futura (`#Melhorar aqui usando o rolê do schema`)
 - Testes de segurança (ex.: injeção, tokens expirados)
@@ -51,130 +51,151 @@ Validar o comportamento da API ServeRest (`https://compassuol.serverest.dev/`) n
 
 ## 4. Cenários por Endpoint
 
-Legenda: ✅ Implementado · ⬜ A implementar
+Legenda: ✅ Implementado · ⬜ A implementar · 🟢 Sucesso · 🔴 Erro
 
 ### 4.1 `POST /login`
 
-| # | Cenário | Status esperado | Status |
-|---|---|---|---|
-| L01 | Login com credenciais válidas | 200 + token no body | ✅ |
-| L02 | Login com senha incorreta | 401 + mensagem de erro | ✅ |
-| L03 | Login com e-mail inexistente | 401 | ⬜ |
-| L04 | Login com body vazio / campos ausentes | 400 | ⬜ |
+| # | Tipo | Cenário | Status esperado | Impl. |
+|---|---|---|---|---|
+| L01 | 🟢 | Login com credenciais válidas | 200 + `authorization` no body | ✅ |
+| L02 | 🔴 | Login com senha incorreta | 401 + `"Email e/ou senha inválidos"` | ✅ |
+| L03 | 🔴 | Login com e-mail inexistente | 401 + `"Email e/ou senha inválidos"` | ⬜ |
+| L04 | 🔴 | Login sem o campo `email` no body | 400 + mensagem de campo obrigatório | ⬜ |
+| L05 | 🔴 | Login sem o campo `password` no body | 400 + mensagem de campo obrigatório | ⬜ |
+| L06 | 🔴 | Login com body vazio `{}` | 400 | ⬜ |
 
 ### 4.2 `GET /usuarios`
 
-| # | Cenário | Status esperado | Status |
-|---|---|---|---|
-| U01 | Listar todos os usuários | 200 | ✅ |
-| U02 | Filtrar por query param `administrador=true` | 200 + lista filtrada | ⬜ |
+| # | Tipo | Cenário | Status esperado | Impl. |
+|---|---|---|---|---|
+| U01 | 🟢 | Listar todos os usuários | 200 + lista no body | ✅ |
+| U02 | 🟢 | Filtrar por `administrador=true` | 200 + lista filtrada | ⬜ |
+| U03 | 🟢 | Filtrar por `administrador=false` | 200 + lista filtrada | ⬜ |
 
 ### 4.3 `GET /usuarios/:id`
 
-| # | Cenário | Status esperado | Status |
-|---|---|---|---|
-| U04 | Buscar usuário por ID válido | 200 + dados corretos | ✅ |
-| U05 | Buscar usuário com ID inexistente | 400 | ✅ |
+| # | Tipo | Cenário | Status esperado | Impl. |
+|---|---|---|---|---|
+| U04 | 🟢 | Buscar usuário por ID válido | 200 + dados corretos no body | ✅ |
+| U05 | 🔴 | Buscar usuário com ID inexistente | 400 + `"Usuário não encontrado"` | ✅ |
 
 ### 4.4 `POST /usuarios`
 
-| # | Cenário | Status esperado | Status |
-|---|---|---|---|
-| U06 | Criar usuário administrador com dados válidos | 201 + `_id` no body | ✅ |
-| U07 | Criar usuário com e-mail já cadastrado | 400 + mensagem de erro | ✅ |
-| U08 | Criar usuário com campos obrigatórios ausentes | 400 | ⬜ |
-| U09 | Criar usuário não-administrador | 201 | ⬜ |
+| # | Tipo | Cenário | Status esperado | Impl. |
+|---|---|---|---|---|
+| U06 | 🟢 | Criar usuário administrador com dados válidos | 201 + `_id` no body | ✅ |
+| U07 | 🟢 | Criar usuário não-administrador com dados válidos | 201 + `_id` no body | ⬜ |
+| U08 | 🔴 | Criar usuário com e-mail já cadastrado | 400 + `"Este email já está sendo usado"` | ✅ |
+| U09 | 🔴 | Criar usuário sem o campo `nome` | 400 + mensagem de campo obrigatório | ⬜ |
+| U10 | 🔴 | Criar usuário sem o campo `email` | 400 + mensagem de campo obrigatório | ⬜ |
+| U11 | 🔴 | Criar usuário sem o campo `password` | 400 + mensagem de campo obrigatório | ⬜ |
+| U12 | 🔴 | Criar usuário com e-mail em formato inválido | 400 + mensagem de validação | ⬜ |
 
 ### 4.5 `PUT /usuarios/:id`
 
-| # | Cenário | Status esperado | Status |
-|---|---|---|---|
-| U10 | Atualizar dados de um usuário existente | 200 | ⬜ |
-| U11 | Atualizar usuário inexistente (deve criar) | 201 | ⬜ |
+| # | Tipo | Cenário | Status esperado | Impl. |
+|---|---|---|---|---|
+| U13 | 🟢 | Atualizar dados de um usuário existente | 200 + `"Registro alterado com sucesso"` | ✅ |
+| U14 | 🟢 | Atualizar usuário inexistente (upsert — deve criar) | 201 + `_id` no body | ⬜ |
+| U15 | 🔴 | Atualizar para um e-mail já usado por outro usuário | 400 + `"Este email já está sendo usado"` | ⬜ |
+| U16 | 🔴 | Atualizar usuário com campo obrigatório ausente | 400 | ⬜ |
 
 ### 4.6 `DELETE /usuarios/:id`
 
-| # | Cenário | Status esperado | Status |
-|---|---|---|---|
-| U12 | Deletar usuário existente | 200 | ⬜ (coberto via teardown) |
-| U13 | Deletar usuário com carrinho ativo | 400 | ⬜ |
+| # | Tipo | Cenário | Status esperado | Impl. |
+|---|---|---|---|---|
+| U17 | 🟢 | Deletar usuário existente sem carrinho | 200 + `"Registro excluído com sucesso"` | ✅ |
+| U18 | 🔴 | Deletar usuário que possui carrinho ativo | 400 + `"Não é permitido excluir usuário com carrinho cadastrado"` | ⬜ |
+| U19 | � | Deletar usuário com ID inexistente | 200 + `"Nenhum registro excluído"` | ⬜ |
 
 ### 4.7 `GET /produtos`
 
-| # | Cenário | Status esperado | Status |
-|---|---|---|---|
-| P01 | Listar todos os produtos | 200 | ✅ |
-| P02 | Filtrar por query param `nome` | 200 + lista filtrada | ⬜ |
+| # | Tipo | Cenário | Status esperado | Impl. |
+|---|---|---|---|---|
+| P01 | 🟢 | Listar todos os produtos | 200 + lista no body | ✅ |
+| P02 | 🟢 | Filtrar por query param `nome` | 200 + lista filtrada | ⬜ |
 
 ### 4.8 `GET /produtos/:id`
 
-| # | Cenário | Status esperado | Status |
-|---|---|---|---|
-| P03 | Buscar produto por ID válido | 200 | ✅ |
-| P04 | Buscar produto com ID inexistente | 400 | ⬜ |
+| # | Tipo | Cenário | Status esperado | Impl. |
+|---|---|---|---|---|
+| P03 | 🟢 | Buscar produto por ID válido | 200 + dados corretos | ✅ |
+| P04 | 🔴 | Buscar produto com ID inexistente | 400 + `"Produto não encontrado"` | ⬜ |
 
 ### 4.9 `POST /produtos`
 
-| # | Cenário | Status esperado | Status |
-|---|---|---|---|
-| P05 | Criar produto como administrador | 201 + `_id` no body | ✅ |
-| P06 | Criar produto sem token de autenticação | 401 | ⬜ |
-| P07 | Criar produto como usuário não-admin | 403 + mensagem de erro | ✅ |
-| P08 | Criar produto com nome duplicado | 400 | ⬜ |
+| # | Tipo | Cenário | Status esperado | Impl. |
+|---|---|---|---|---|
+| P05 | 🟢 | Criar produto como administrador com dados válidos | 201 + `_id` no body | ✅ |
+| P06 | 🔴 | Criar produto como usuário não-admin | 403 + `"Rota exclusiva para administradores"` | ✅ |
+| P07 | 🔴 | Criar produto sem header de autenticação | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ⬜ |
+| P08 | 🔴 | Criar produto com token inválido / expirado | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ⬜ |
+| P09 | 🔴 | Criar produto com nome já cadastrado | 400 + `"Já existe produto com esse nome"` | ⬜ |
+| P10 | 🔴 | Criar produto sem o campo `nome` | 400 + mensagem de campo obrigatório | ⬜ |
+| P11 | 🔴 | Criar produto sem o campo `preco` | 400 + mensagem de campo obrigatório | ⬜ |
+| P12 | 🔴 | Criar produto com `preco` negativo ou zero | 400 + mensagem de validação | ⬜ |
+| P13 | 🔴 | Criar produto com `quantidade` negativa | 400 + mensagem de validação | ⬜ |
 
 ### 4.10 `PUT /produtos/:id`
 
-| # | Cenário | Status esperado | Status |
-|---|---|---|---|
-| P09 | Atualizar produto existente como admin | 200 | ✅ |
-| P10 | Atualizar produto sem autenticação | 401 | ⬜ |
-| P11 | Atualizar produto como não-admin | 403 | ⬜ |
+| # | Tipo | Cenário | Status esperado | Impl. |
+|---|---|---|---|---|
+| P14 | 🟢 | Atualizar produto existente como admin | 200 + `"Registro alterado com sucesso"` | ✅ |
+| P15 | 🟢 | Atualizar produto inexistente como admin (upsert) | 201 | ⬜ |
+| P16 | 🔴 | Atualizar produto sem autenticação | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ⬜ |
+| P17 | 🔴 | Atualizar produto como usuário não-admin | 403 | ⬜ |
+| P18 | 🔴 | Atualizar produto com nome já usado por outro produto | 400 | ⬜ |
 
 ### 4.11 `DELETE /produtos/:id`
 
-| # | Cenário | Status esperado | Status |
-|---|---|---|---|
-| P12 | Deletar produto existente como admin | 200 | ✅ |
-| P13 | Deletar produto com estoque em carrinho | 400 | ⬜ |
-| P14 | Deletar produto sem autenticação | 401 | ⬜ |
+| # | Tipo | Cenário | Status esperado | Impl. |
+|---|---|---|---|---|
+| P19 | 🟢 | Deletar produto existente como admin | 200 + `"Registro excluído com sucesso"` | ✅ |
+| P20 | 🔴 | Deletar produto que está em carrinho ativo | 400 + `"Não é permitido excluir produto que faz parte do carrinho"` | ⬜ |
+| P21 | 🔴 | Deletar produto sem autenticação | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ⬜ |
+| P22 | 🔴 | Deletar produto como usuário não-admin | 403 | ⬜ |
+| P23 | 🔴 | Deletar produto com ID inexistente | 200 + `"Nenhum registro excluído"` | ⬜ |
 
 ### 4.12 `GET /carrinhos`
 
-| # | Cenário | Status esperado | Status |
-|---|---|---|---|
-| C01 | Listar todos os carrinhos | 200 | ⬜ |
-| C02 | Filtrar carrinhos por `idUsuario` | 200 + lista filtrada | ⬜ |
+| # | Tipo | Cenário | Status esperado | Impl. |
+|---|---|---|---|---|
+| C01 | 🟢 | Listar todos os carrinhos | 200 + lista no body | ⬜ |
+| C02 | 🟢 | Filtrar carrinhos por `idUsuario` | 200 + lista filtrada | ⬜ |
 
 ### 4.13 `GET /carrinhos/:id`
 
-| # | Cenário | Status esperado | Status |
-|---|---|---|---|
-| C03 | Buscar carrinho por ID válido | 200 + itens corretos | ⬜ |
-| C04 | Buscar carrinho com ID inexistente | 400 | ⬜ |
+| # | Tipo | Cenário | Status esperado | Impl. |
+|---|---|---|---|---|
+| C03 | 🟢 | Buscar carrinho por ID válido | 200 + itens e total corretos | ⬜ |
+| C04 | 🔴 | Buscar carrinho com ID inexistente | 400 + `"Carrinho não encontrado"` | ⬜ |
 
 ### 4.14 `POST /carrinhos`
 
-| # | Cenário | Status esperado | Status |
-|---|---|---|---|
-| C05 | Criar carrinho com produto válido | 201 + `_id` no body | ⬜ |
-| C06 | Criar segundo carrinho para o mesmo usuário | 400 | ⬜ |
-| C07 | Criar carrinho com produto inexistente | 400 | ⬜ |
-| C08 | Criar carrinho com quantidade maior que o estoque | 400 | ⬜ |
-| C09 | Criar carrinho sem autenticação | 401 | ⬜ |
+| # | Tipo | Cenário | Status esperado | Impl. |
+|---|---|---|---|---|
+| C05 | 🟢 | Criar carrinho com produto válido | 201 + `_id` no body | ⬜ |
+| C06 | 🔴 | Criar segundo carrinho para o mesmo usuário | 400 + `"Não é permitido ter mais de 1 carrinho"` | ⬜ |
+| C07 | 🔴 | Criar carrinho com produto inexistente | 400 + `"Produto não encontrado"` | ⬜ |
+| C08 | 🔴 | Criar carrinho com quantidade maior que o estoque | 400 + `"Produto não possui quantidade suficiente"` | ⬜ |
+| C09 | 🔴 | Criar carrinho sem autenticação | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ⬜ |
+| C10 | 🔴 | Criar carrinho com produto duplicado na lista | 400 + `"Não é permitido possuir produto duplicado"` | ⬜ |
 
 ### 4.15 `DELETE /carrinhos/concluir-compra`
 
-| # | Cenário | Status esperado | Status |
-|---|---|---|---|
-| C10 | Concluir compra com carrinho ativo | 200 + estoque decrementado | ⬜ |
-| C11 | Concluir compra sem carrinho ativo | 200 (sem efeito) | ⬜ |
+| # | Tipo | Cenário | Status esperado | Impl. |
+|---|---|---|---|---|
+| C11 | 🟢 | Concluir compra com carrinho ativo | 200 + estoque decrementado | ⬜ |
+| C12 | 🟢 | Concluir compra sem carrinho ativo | 200 + `"Não foi encontrado carrinho..."` | ⬜ |
+| C13 | 🔴 | Concluir compra sem autenticação | 401 | ⬜ |
 
 ### 4.16 `DELETE /carrinhos/cancelar-compra`
 
-| # | Cenário | Status esperado | Status |
-|---|---|---|---|
-| C12 | Cancelar compra com carrinho ativo | 200 + estoque restaurado | ⬜ |
-| C13 | Cancelar compra sem carrinho ativo | 200 (sem efeito) | ⬜ |
+| # | Tipo | Cenário | Status esperado | Impl. |
+|---|---|---|---|---|
+| C14 | 🟢 | Cancelar compra com carrinho ativo | 200 + estoque restaurado | ⬜ |
+| C15 | 🟢 | Cancelar compra sem carrinho ativo | 200 + `"Não foi encontrado carrinho..."` | ⬜ |
+| C16 | 🔴 | Cancelar compra sem autenticação | 401 | ⬜ |
 
 ---
 
