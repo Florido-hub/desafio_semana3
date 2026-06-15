@@ -1,14 +1,15 @@
 import requests
 from tests.fixtures.products import *
 from tests.fixtures.auth_token import *
+from tests.fixtures.usuario import *
 
 
 def test_can_create_product(auth_token):
     payload = {
         "nome": f"Produto{int(time.time()*100)}",
-        "preco": 470,
+        "preco": int(time.time()*100),
         "descricao": "Produto de teste",
-        "quantidade": 381,
+        "quantidade": int(time.time()*100),
     }
 
     headers = {"Authorization": auth_token}
@@ -23,19 +24,46 @@ def test_can_create_product(auth_token):
     produto_id = body["_id"]
     requests.delete(f"{ENDPOINT}/produtos/{produto_id}", headers=headers)
 
+def test_can_create_product_no_adm(usuario_existente_no_admin):
+    user_payload = {
+        "email": usuario_existente_no_admin["email"],
+        "password": usuario_existente_no_admin["password"]
+    }
+    response = requests.post(
+        f"{ENDPOINT}/login", json=user_payload
+    )
+    assert response.status_code == 200
+
+    user_authorization = response.json()["authorization"]
+
+    product_payload = {
+        "nome": f"Produto{int(time.time()*100)}",
+        "preco": int(time.time()*100),
+        "descricao": "Produto de teste",
+        "quantidade": int(time.time()*100),
+    }
+
+    user_header = {"Authorization": user_authorization}
+
+    response = requests.post(f"{ENDPOINT}/produtos", headers=user_header, json=product_payload)
+    assert response.status_code == 403
+
+    body = response.json()
+    assert body["message"] == "Rota exclusiva para administradores"
+
 
 def test_can_update_product(auth_token, produto_existente):
     payload = {
-        "nome": f"produto {int(time.time()*100)}",
-        "preco": 200,
-        "descricao": "produto de teste alterado",
-        "quantidade": 100,
+        "nome": produto_existente["nome"],
+        "preco": produto_existente["preco"],
+        "descricao": produto_existente["descricao"],
+        "quantidade": produto_existente["quantidade"],
     }
 
     headers = {"Authorization": auth_token}
 
     response = requests.put(f"{ENDPOINT}/produtos/{produto_existente['_id']}", headers=headers, json=payload)
-    assert response.status_code in [200,201]
+    assert response.status_code in [200]
 
     body = response.json()
     assert body["message"] == "Registro alterado com sucesso"
