@@ -3,6 +3,7 @@ import requests
 import time
 
 from tests.config.settings import ENDPOINT
+from tests.fixtures.auth_token import *
 
 
 @pytest.fixture

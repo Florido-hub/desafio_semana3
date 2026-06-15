@@ -110,14 +110,14 @@ Legenda: ✅ Implementado · ⬜ A implementar · 🟢 Sucesso · 🔴 Erro
 | # | Tipo | Cenário | Status esperado | Impl. |
 |---|---|---|---|---|
 | P01 | 🟢 | Listar todos os produtos | 200 + lista no body | ✅ |
-| P02 | 🟢 | Filtrar por query param `nome` | 200 + lista filtrada | ⬜ |
+| P02 | 🟢 | Filtrar por query param `nome` | 200 + lista filtrada | ✅ |
 
 ### 4.8 `GET /produtos/:id`
 
 | # | Tipo | Cenário | Status esperado | Impl. |
 |---|---|---|---|---|
 | P03 | 🟢 | Buscar produto por ID válido | 200 + dados corretos | ✅ |
-| P04 | 🔴 | Buscar produto com ID inexistente | 400 + `"Produto não encontrado"` | ⬜ |
+| P04 | 🔴 | Buscar produto com ID inexistente | 400 + `"Produto não encontrado"` | ✅ |
 
 ### 4.9 `POST /produtos`
 
@@ -125,13 +125,12 @@ Legenda: ✅ Implementado · ⬜ A implementar · 🟢 Sucesso · 🔴 Erro
 |---|---|---|---|---|
 | P05 | 🟢 | Criar produto como administrador com dados válidos | 201 + `_id` no body | ✅ |
 | P06 | 🔴 | Criar produto como usuário não-admin | 403 + `"Rota exclusiva para administradores"` | ✅ |
-| P07 | 🔴 | Criar produto sem header de autenticação | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ⬜ |
-| P08 | 🔴 | Criar produto com token inválido / expirado | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ⬜ |
-| P09 | 🔴 | Criar produto com nome já cadastrado | 400 + `"Já existe produto com esse nome"` | ⬜ |
-| P10 | 🔴 | Criar produto sem o campo `nome` | 400 + mensagem de campo obrigatório | ⬜ |
-| P11 | 🔴 | Criar produto sem o campo `preco` | 400 + mensagem de campo obrigatório | ⬜ |
-| P12 | 🔴 | Criar produto com `preco` negativo ou zero | 400 + mensagem de validação | ⬜ |
-| P13 | 🔴 | Criar produto com `quantidade` negativa | 400 + mensagem de validação | ⬜ |
+| P07 | 🔴 | Criar produto sem header de autenticação | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ✅ |
+| P08 | 🔴 | Criar produto com token inválido / expirado | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ✅ |
+| P09 | 🔴 | Criar produto sem o campo `nome` | 400 + mensagem de campo obrigatório | ✅ |
+| P10 | 🔴 | Criar produto sem o campo `preco` | 400 + mensagem de campo obrigatório | ✅ |
+| P11 | 🔴 | Criar produto com `preco` negativo ou zero | 400 + mensagem de validação | ✅ |
+| P12 | 🔴 | Criar produto com `quantidade` negativa | 400 + mensagem de validação | ✅ |
 
 ### 4.10 `PUT /produtos/:id`
 

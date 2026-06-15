@@ -24,33 +24,115 @@ def test_can_create_product(auth_token):
     produto_id = body["_id"]
     requests.delete(f"{ENDPOINT}/produtos/{produto_id}", headers=headers)
 
-def test_can_create_product_no_adm(usuario_existente_no_admin):
-    user_payload = {
-        "email": usuario_existente_no_admin["email"],
-        "password": usuario_existente_no_admin["password"]
-    }
-    response = requests.post(
-        f"{ENDPOINT}/login", json=user_payload
-    )
-    assert response.status_code == 200
-
-    user_authorization = response.json()["authorization"]
-
-    product_payload = {
-        "nome": f"Produto{int(time.time()*100)}",
-        "preco": int(time.time()*100),
+def test_criar_produto_sem_header_de_autenticacao():
+    payload = {
+        "nome": f"Produto{int(time.time() * 100)}",
+        "preco": int(time.time() * 100),
         "descricao": "Produto de teste",
-        "quantidade": int(time.time()*100),
+        "quantidade": int(time.time() * 100),
     }
 
-    user_header = {"Authorization": user_authorization}
+    response = requests.post(f"{ENDPOINT}/produtos", json=payload)
+    assert response.status_code == 401
 
-    response = requests.post(f"{ENDPOINT}/produtos", headers=user_header, json=product_payload)
+    body = response.json()
+    assert body["message"] == "Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"
+
+def test_criar_produto_com_token_invalido():
+    payload = {
+        "nome": f"Produto{int(time.time() * 100)}",
+        "preco": int(time.time() * 100),
+        "descricao": "Produto de teste",
+        "quantidade": int(time.time() * 100),
+    }
+
+    header = {"Authorization": "Token invalido ou expirado"}
+
+    response = requests.post(f"{ENDPOINT}/produtos", headers=header,json=payload)
+    assert response.status_code == 401
+
+    body = response.json()
+    assert body["message"] == "Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"
+
+def test_criar_produto_sem_admin(auth_token_dinamico_sem_admin):
+    payload = {
+        "nome": f"Produto{int(time.time() * 100)}",
+        "preco": int(time.time() * 100),
+        "descricao": "Produto de teste",
+        "quantidade": int(time.time() * 100),
+    }
+
+    headers = {"Authorization": auth_token_dinamico_sem_admin}
+
+    response = requests.post(f"{ENDPOINT}/produtos", headers=headers, json=payload)
     assert response.status_code == 403
 
     body = response.json()
     assert body["message"] == "Rota exclusiva para administradores"
 
+def test_criar_produto_sem_nome(auth_token, produto_existente):
+    payload = {
+        "nome": "",
+        "preco": int(time.time() * 100),
+        "descricao": "Produto de teste",
+        "quantidade": int(time.time() * 100),
+    }
+
+    headers = {"Authorization": auth_token}
+
+    response = requests.post(f"{ENDPOINT}/produtos", headers=headers, json=payload)
+    assert response.status_code == 400
+
+    body = response.json()
+    assert body['message'] == "nome não pode ficar em branco"
+
+def test_criar_produto_sem_preco(auth_token, produto_existente):
+    payload = {
+        "nome": f"Produto{int(time.time() * 100)}",
+        "preco": "",
+        "descricao": "Produto de teste",
+        "quantidade": int(time.time() * 100),
+    }
+
+    headers = {"Authorization": auth_token}
+
+    response = requests.post(f"{ENDPOINT}/produtos", headers=headers, json=payload)
+    assert response.status_code == 400
+
+    body = response.json()
+    assert body['message'] == "nome não pode ficar em branco"
+
+def test_criar_produto_preco_negativo(auth_token, produto_existente):
+    payload = {
+        "nome": f"Produto{int(time.time() * 100)}",
+        "preco": -10,
+        "descricao": "Produto de teste",
+        "quantidade": int(time.time() * 100),
+    }
+
+    headers = {"Authorization": auth_token}
+
+    response = requests.post(f"{ENDPOINT}/produtos", headers=headers, json=payload)
+    assert response.status_code == 400
+
+    body = response.json()
+    assert body['preco'] == "preco deve ser um número positivo"
+
+def test_criar_produto_quantidade_negativa(auth_token, produto_existente):
+    payload = {
+        "nome": f"Produto{int(time.time() * 100)}",
+        "preco": int(time.time() * 100),
+        "descricao": "Produto de teste",
+        "quantidade": -100,
+    }
+
+    headers = {"Authorization": auth_token}
+
+    response = requests.post(f"{ENDPOINT}/produtos", headers=headers, json=payload)
+    assert response.status_code == 400
+
+    body = response.json()
+    assert body['quantidade'] == "quantidade deve ser maior ou igual a 0"
 
 def test_can_update_product(auth_token, produto_existente):
     payload = {

@@ -1,13 +1,11 @@
-from urllib import response
-
 import requests
 from tests.config.settings import *
 from tests.fixtures.usuario import *
 
-def test_login_success(usuario_existente):
+def test_login_success(usuario_existente_admin):
     payload = {
-        "email": f"{usuario_existente['email']}",
-        "password": f"{usuario_existente['password']}"
+        "email": f"{usuario_existente_admin['email']}",
+        "password": f"{usuario_existente_admin['password']}"
     }
 
     response = requests.post(f"{ENDPOINT}/login", json=payload)
@@ -19,9 +17,9 @@ def test_login_success(usuario_existente):
     assert "authorization" in body
     assert isinstance(body["authorization"], str)
 
-def test_login_senha_errada(usuario_existente):
+def test_login_senha_errada(usuario_existente_admin):
     payload = {
-        "email": f"{usuario_existente['email']}",
+        "email": f"{usuario_existente_admin['email']}",
         "password": "senha_errada"
     }
 
@@ -67,7 +65,7 @@ def test_login_senha_ausente_no_corpo(usuario_existente_admin):
     body = response.json()
     assert body["password"] == "password não pode ficar em branco"
 
-def test_login_senha_ausente_no_corpo(usuario_existente_admin):
+def test_login_campos_todos_ausentes(usuario_existente_admin):
     payload = {
         "email": "",
         "password": ""

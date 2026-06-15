@@ -32,7 +32,7 @@ def test_get_users_by_id_not_found():
     assert response.status_code == 400
     assert response.json()["message"] == "Usuário não encontrado"
 
-def test_get_user_filter_by_admin_true(usuario_existente_admin):
+def test_get_user_filter_by_admin_true():
     response = requests.get(f"{ENDPOINT}/usuarios", params={"administrador": "true"})
     assert response.status_code == 200
 
