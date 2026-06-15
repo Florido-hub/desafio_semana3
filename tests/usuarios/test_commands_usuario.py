@@ -4,7 +4,7 @@ import time
 from tests.config.settings import *
 from tests.fixtures.usuario import *
 
-def test_create_user_administrador():
+def test_create_user():
     payload = {
         "nome": f"fulano{int(time.time()*100)}",
         "email": f"fulano{int(time.time()*100)}@email.com",
@@ -21,6 +21,20 @@ def test_create_user_administrador():
 
     user_id = body["_id"]
     requests.delete(f"{ENDPOINT}/usuarios/{user_id}")
+
+def test_create_user_email_em_uso(usuario_existente_admin):
+    payload = {
+        "nome": f"fulano{int(time.time()*100)}",
+        "email": usuario_existente_admin["email"],
+        "password": "1234",
+        "administrador": "true"
+    }
+
+    response = requests.post(f"{ENDPOINT}/usuarios", json=payload)
+    assert response.status_code == 400
+
+    body = response.json()
+    assert body["message"] == "Este email já está sendo usado"
 
 def test_create_user_sem_body():
     payload = {
@@ -68,6 +82,56 @@ def test_update_user(usuario_existente_admin):
     get_response = requests.get(f"{ENDPOINT}/usuarios/{usuario_existente_admin['_id']}")
     assert get_response.status_code == 200
     assert get_response.json()["nome"] == "Nome atualizado"
+
+def test_update_user_inexistente():
+    update_payload = {
+        "nome": "Nome atualizado",
+        "email": "email@atualizado.com",
+        "password": "teste",
+        "administrador": "true"
+    }
+
+    fake_id = "000000000000000000000000"
+
+    response = requests.put(
+        f"{ENDPOINT}/usuarios/{fake_id}", json=update_payload
+    )
+    assert response.status_code == 201
+
+    body = response.json()
+    assert body["message"] == "Cadastro realizado com sucesso"
+    assert isinstance(body["_id"], str)
+
+    usuario_id = body["_id"]
+    requests.delete(f"{ENDPOINT}/usuarios/{usuario_id}")
+
+def test_update_user_email_em_uso(usuario_existente_admin):
+    payload = {
+        "nome": f"fulano{int(time.time()*100)}",
+        "email": "fulano@qa.com",
+        "password": "1234",
+        "administrador": "true"
+    }
+
+    response = requests.put(f"{ENDPOINT}/usuarios/{usuario_existente_admin['_id']}", json=payload)
+    assert response.status_code == 400
+
+    body = response.json()
+    assert body["message"] == "Este email já está sendo usado"
+
+def test_update_user_campo_obrigatorio_ausente(usuario_existente_admin):
+    payload = {
+        "nome": "",
+        "email": "fulano@qa.com",
+        "password": "1234",
+        "administrador": "true"
+    }
+
+    response = requests.put(f"{ENDPOINT}/usuarios/{usuario_existente_admin['_id']}", json=payload)
+    assert response.status_code == 400
+
+    body = response.json()
+    print(body)
 
 
 def test_delete_user_success(usuario_existente_admin):

@@ -93,9 +93,9 @@ Legenda: ✅ Implementado · ⬜ A implementar · 🟢 Sucesso · 🔴 Erro
 | # | Tipo | Cenário | Status esperado | Impl. |
 |---|---|---|---|---|
 | U13 | 🟢 | Atualizar dados de um usuário existente | 200 + `"Registro alterado com sucesso"` | ✅ |
-| U14 | 🟢 | Atualizar usuário inexistente (upsert — deve criar) | 201 + `_id` no body | ⬜ |
-| U15 | 🔴 | Atualizar para um e-mail já usado por outro usuário | 400 + `"Este email já está sendo usado"` | ⬜ |
-| U16 | 🔴 | Atualizar usuário com campo obrigatório ausente | 400 | ⬜ |
+| U14 | 🟢 | Atualizar usuário inexistente (upsert — deve criar) | 201 + `_id` no body | ✅ |
+| U15 | 🔴 | Atualizar para um e-mail já usado por outro usuário | 400 + `"Este email já está sendo usado"` | ✅ |
+| U16 | 🔴 | Atualizar usuário com campo obrigatório ausente | 400 | ✅ |
 
 ### 4.6 `DELETE /usuarios/:id`
 
