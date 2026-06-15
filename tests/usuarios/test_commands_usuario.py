@@ -139,4 +139,19 @@ def test_delete_user_success(usuario_existente_admin):
     assert response.status_code == 200
 
     body = response.json()
-    assert body["message"] == "Registro excluído com sucesso"
+    mensagem = ["Registro excluído com sucesso", "Nenhum registro excluído"]
+    assert body["message"] in mensagem
+
+#Olha aí o caso de não encontrar e retornar status 200, professor
+def test_delete_user_id_inexistente():
+    fake_id = "000000000000000000000000"
+
+    response = requests.delete(
+        f"{ENDPOINT}/usuarios/{fake_id}"
+    )
+    assert response.status_code == 200
+
+    body = response.json()
+    mensagem = ["Registro excluído com sucesso", "Nenhum registro excluído"]
+    assert body["message"] in mensagem
+

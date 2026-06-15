@@ -84,7 +84,7 @@ def test_criar_produto_sem_nome(auth_token, produto_existente):
     assert response.status_code == 400
 
     body = response.json()
-    assert body['message'] == "nome não pode ficar em branco"
+    assert body['nome'] == "nome não pode ficar em branco"
 
 def test_criar_produto_sem_preco(auth_token, produto_existente):
     payload = {
@@ -100,7 +100,7 @@ def test_criar_produto_sem_preco(auth_token, produto_existente):
     assert response.status_code == 400
 
     body = response.json()
-    assert body['message'] == "nome não pode ficar em branco"
+    assert body['preco'] == "preco deve ser um número"
 
 def test_criar_produto_preco_negativo(auth_token, produto_existente):
     payload = {

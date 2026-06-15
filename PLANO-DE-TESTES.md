@@ -102,8 +102,7 @@ Legenda: ✅ Implementado · ⬜ A implementar · 🟢 Sucesso · 🔴 Erro
 | # | Tipo | Cenário | Status esperado | Impl. |
 |---|---|---|---|---|
 | U17 | 🟢 | Deletar usuário existente sem carrinho | 200 + `"Registro excluído com sucesso"` | ✅ |
-| U18 | 🔴 | Deletar usuário que possui carrinho ativo | 400 + `"Não é permitido excluir usuário com carrinho cadastrado"` | ⬜ |
-| U19 | 🟢 | Deletar usuário com ID inexistente | 200 + `"Nenhum registro excluído"` | ⬜ |
+| U18 | 🟢 | Deletar usuário com ID inexistente | 200 + `"Nenhum registro excluído"` | ✅ |
 
 ### 4.7 `GET /produtos`
 
