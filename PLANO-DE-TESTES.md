@@ -136,10 +136,10 @@ Legenda: ✅ Implementado · ⬜ A implementar · 🟢 Sucesso · 🔴 Erro
 | # | Tipo | Cenário | Status esperado | Impl. |
 |---|---|---|---|---|
 | P14 | 🟢 | Atualizar produto existente como admin | 200 + `"Registro alterado com sucesso"` | ✅ |
-| P15 | 🟢 | Atualizar produto inexistente como admin (upsert) | 201 + `_id` no body | ⬜ |
-| P16 | 🔴 | Atualizar produto sem autenticação | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ⬜ |
-| P17 | 🔴 | Atualizar produto como usuário não-admin | 403 + `"Rota exclusiva para administradores"` | ⬜ |
-| P18 | 🔴 | Atualizar produto com nome já usado por outro produto | 400 + `"Já existe produto com esse nome"` | ⬜ |
+| P15 | 🟢 | Atualizar produto inexistente como admin (upsert) | 201 + `_id` no body | ✅ |
+| P16 | 🔴 | Atualizar produto sem autenticação | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ✅ |
+| P17 | 🔴 | Atualizar produto como usuário não-admin | 403 + `"Rota exclusiva para administradores"` | ✅ |
+| P18 | 🔴 | Atualizar produto com nome já usado por outro produto | 400 + `"Já existe produto com esse nome"` | ✅ |
 
 ### 4.11 `DELETE /produtos/:id`
 

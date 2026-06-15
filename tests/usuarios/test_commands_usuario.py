@@ -91,7 +91,7 @@ def test_update_user_inexistente():
         "administrador": "true"
     }
 
-    fake_id = "000000000000000000000000"
+    fake_id = "0000000000000000"
 
     response = requests.put(
         f"{ENDPOINT}/usuarios/{fake_id}", json=update_payload

@@ -24,6 +24,7 @@ def test_can_create_product(auth_token):
     produto_id = body["_id"]
     requests.delete(f"{ENDPOINT}/produtos/{produto_id}", headers=headers)
 
+
 def test_criar_produto_sem_header_de_autenticacao():
     payload = {
         "nome": f"Produto{int(time.time() * 100)}",
@@ -137,19 +138,90 @@ def test_criar_produto_quantidade_negativa(auth_token, produto_existente):
 def test_can_update_product(auth_token, produto_existente):
     payload = {
         "nome": produto_existente["nome"],
-        "preco": produto_existente["preco"],
+        "preco": int(time.time() * 100),
         "descricao": produto_existente["descricao"],
-        "quantidade": produto_existente["quantidade"],
+        "quantidade": int(time.time() * 100),
     }
 
     headers = {"Authorization": auth_token}
 
     response = requests.put(f"{ENDPOINT}/produtos/{produto_existente['_id']}", headers=headers, json=payload)
-    assert response.status_code in [200]
+    assert response.status_code == 200
 
     body = response.json()
     assert body["message"] == "Registro alterado com sucesso"
 
+def test_can_update_product_inexistente(auth_token, produto_existente):
+    payload = {
+        "nome": f"Produto{int(time.time() * 100)}",
+        "preco": int(time.time() * 100),
+        "descricao": "Produto de teste",
+        "quantidade": int(time.time() * 100),
+    }
+
+    headers = {"Authorization": auth_token}
+
+    fake_id = "0000000000000000"
+
+    response = requests.put(f"{ENDPOINT}/produtos/{fake_id}", headers=headers, json=payload)
+    assert response.status_code == 201
+
+    body = response.json()
+    assert body["message"] == "Cadastro realizado com sucesso"
+    assert isinstance(body['_id'], str)
+
+    produto_id = body["_id"]
+    requests.delete(f"{ENDPOINT}/produtos/{produto_id}", headers=headers)
+
+def test_can_update_product_sem_token(produto_existente):
+    payload = {
+        "nome": f"Produto{int(time.time() * 100)}",
+        "preco": int(time.time() * 100),
+        "descricao": "Produto de teste",
+        "quantidade": int(time.time() * 100),
+    }
+
+    headers = {"Authorization": "Token inválido"}
+
+    fake_id = "0000000000000000"
+
+    response = requests.put(f"{ENDPOINT}/produtos/{produto_existente['_id']}", headers=headers, json=payload)
+    assert response.status_code == 401
+
+    body = response.json()
+    assert body["message"] == "Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"
+
+def test_can_update_product_sem_admin(auth_token_dinamico_sem_admin, produto_existente):
+    payload = {
+        "nome": produto_existente["nome"],
+        "preco": int(time.time() * 100),
+        "descricao": produto_existente["descricao"],
+        "quantidade": int(time.time() * 100),
+    }
+
+    headers = {"Authorization": auth_token_dinamico_sem_admin}
+
+    response = requests.put(f"{ENDPOINT}/produtos/{produto_existente['_id']}", headers=headers, json=payload)
+    assert response.status_code == 403
+
+    body = response.json()
+    assert body["message"] == "Rota exclusiva para administradores"
+
+def test_can_update_product_mesmo_nome(auth_token, produto_existente):
+    payload = {
+        "nome": "Logitech MX Vertical",
+        "preco": int(time.time() * 100),
+        "descricao": produto_existente["descricao"],
+        "quantidade": int(time.time() * 100),
+    }
+
+    headers = {"Authorization": auth_token}
+
+    response = requests.put(f"{ENDPOINT}/produtos/{produto_existente['_id']}", headers=headers, json=payload)
+    assert response.status_code == 400
+
+    body = response.json()
+    assert body["message"] == "Já existe produto com esse nome"
 
 def test_can_delete_product(auth_token, produto_existente):
     headers = {"Authorization": auth_token}
