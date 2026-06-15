@@ -60,8 +60,8 @@ Legenda: ✅ Implementado · ⬜ A implementar · 🟢 Sucesso · 🔴 Erro
 | L01 | 🟢 | Login com credenciais válidas | 200 + `authorization` no body | ✅ |
 | L02 | 🔴 | Login com senha incorreta | 401 + `"Email e/ou senha inválidos"` | ✅ |
 | L03 | 🔴 | Login com e-mail inexistente | 401 + `"Email e/ou senha inválidos"` | ✅ |
-| L04 | 🔴 | Login sem o campo `email` no body | 400 | ✅ |
-| L05 | 🔴 | Login sem o campo `password` no body | 400 | ✅ |
+| L04 | 🔴 | Login sem o campo `email` no body | 400 + `"email não pode ficar em branco"`| ✅ |
+| L05 | 🔴 | Login sem o campo `password` no body | 400 + `"password não pode ficar em branco"`| ✅ |
 | L06 | 🔴 | Login com body vazio `{}` | 400 | ✅ |
 
 ### 4.2 `GET /usuarios`
@@ -85,8 +85,8 @@ Legenda: ✅ Implementado · ⬜ A implementar · 🟢 Sucesso · 🔴 Erro
 |---|---|---|---|---|
 | U06 | 🟢 | Criar usuário administrador com dados válidos | 201 + `_id` no body | ✅ |
 | U07 | 🔴 | Criar usuário com e-mail já cadastrado | 400 + `"Este email já está sendo usado"` | ✅ |
-| U08 | 🔴 | Criar usuário com body vazio `{}` | 400 + mensagem de campo obrigatório | ⬜ |
-| U11 | 🔴 | Criar usuário com e-mail em formato inválido | 400 + mensagem de validação | ⬜ |
+| U08 | 🔴 | Criar usuário com body vazio `{}` | 400 + mensagem de campo obrigatório | ✅ |
+| U11 | 🔴 | Criar usuário com e-mail em formato inválido | 400 + mensagem de validação | ✅ |
 
 ### 4.5 `PUT /usuarios/:id`
 
