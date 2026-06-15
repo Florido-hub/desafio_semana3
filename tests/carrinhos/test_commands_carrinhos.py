@@ -3,9 +3,10 @@ import pytest
 from tests.fixtures.products import *
 from tests.fixtures.usuario import *
 from tests.config.settings import *
+from tests.fixtures.auth_token import *
 
-def test_create_cart(produto_existente, auth_token_dinamico):
-    headers = {"Authorization": auth_token_dinamico}
+def test_criar_carrinho_sucess(produto_existente, auth_token):
+    headers = {"Authorization": auth_token}
 
     cart_payload = {
         "produtos": [

@@ -4,7 +4,7 @@ from tests.fixtures.auth_token import *
 from tests.fixtures.usuario import *
 
 
-def test_can_create_product(auth_token):
+def test_criar_produto_success(auth_token):
     payload = {
         "nome": f"Produto{int(time.time()*100)}",
         "preco": int(time.time()*100),
@@ -55,7 +55,7 @@ def test_criar_produto_com_token_invalido():
     body = response.json()
     assert body["message"] == "Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"
 
-def test_criar_produto_sem_admin(auth_token_dinamico_sem_admin):
+def test_criar_produto_sem_admin(auth_token_no_admin):
     payload = {
         "nome": f"Produto{int(time.time() * 100)}",
         "preco": int(time.time() * 100),
@@ -63,7 +63,7 @@ def test_criar_produto_sem_admin(auth_token_dinamico_sem_admin):
         "quantidade": int(time.time() * 100),
     }
 
-    headers = {"Authorization": auth_token_dinamico_sem_admin}
+    headers = {"Authorization": auth_token_no_admin}
 
     response = requests.post(f"{ENDPOINT}/produtos", headers=headers, json=payload)
     assert response.status_code == 403
@@ -135,7 +135,7 @@ def test_criar_produto_quantidade_negativa(auth_token, produto_existente):
     body = response.json()
     assert body['quantidade'] == "quantidade deve ser maior ou igual a 0"
 
-def test_can_update_product(auth_token, produto_existente):
+def test_atualizar_produto_success(auth_token, produto_existente):
     payload = {
         "nome": produto_existente["nome"],
         "preco": int(time.time() * 100),
@@ -151,7 +151,7 @@ def test_can_update_product(auth_token, produto_existente):
     body = response.json()
     assert body["message"] == "Registro alterado com sucesso"
 
-def test_can_update_product_inexistente(auth_token, produto_existente):
+def test_atualizar_produto_inexistente(auth_token, produto_existente):
     payload = {
         "nome": f"Produto{int(time.time() * 100)}",
         "preco": int(time.time() * 100),
@@ -173,7 +173,7 @@ def test_can_update_product_inexistente(auth_token, produto_existente):
     produto_id = body["_id"]
     requests.delete(f"{ENDPOINT}/produtos/{produto_id}", headers=headers)
 
-def test_can_update_product_sem_token(produto_existente):
+def test_atualizar_produto_sem_token(produto_existente):
     payload = {
         "nome": f"Produto{int(time.time() * 100)}",
         "preco": int(time.time() * 100),
@@ -183,15 +183,13 @@ def test_can_update_product_sem_token(produto_existente):
 
     headers = {"Authorization": "Token inválido"}
 
-    fake_id = "0000000000000000"
-
     response = requests.put(f"{ENDPOINT}/produtos/{produto_existente['_id']}", headers=headers, json=payload)
     assert response.status_code == 401
 
     body = response.json()
     assert body["message"] == "Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"
 
-def test_can_update_product_sem_admin(auth_token_dinamico_sem_admin, produto_existente):
+def test_atualizar_produto_sem_admin(auth_token_no_admin, produto_existente):
     payload = {
         "nome": produto_existente["nome"],
         "preco": int(time.time() * 100),
@@ -199,7 +197,7 @@ def test_can_update_product_sem_admin(auth_token_dinamico_sem_admin, produto_exi
         "quantidade": int(time.time() * 100),
     }
 
-    headers = {"Authorization": auth_token_dinamico_sem_admin}
+    headers = {"Authorization": auth_token_no_admin}
 
     response = requests.put(f"{ENDPOINT}/produtos/{produto_existente['_id']}", headers=headers, json=payload)
     assert response.status_code == 403
@@ -207,7 +205,7 @@ def test_can_update_product_sem_admin(auth_token_dinamico_sem_admin, produto_exi
     body = response.json()
     assert body["message"] == "Rota exclusiva para administradores"
 
-def test_can_update_product_mesmo_nome(auth_token, produto_existente):
+def test_atualizar_produto_com_mesmo_nome(auth_token, produto_existente):
     payload = {
         "nome": "Logitech MX Vertical",
         "preco": int(time.time() * 100),
@@ -223,7 +221,7 @@ def test_can_update_product_mesmo_nome(auth_token, produto_existente):
     body = response.json()
     assert body["message"] == "Já existe produto com esse nome"
 
-def test_can_delete_product(auth_token, produto_existente):
+def test_deletar_produto_success(auth_token, produto_existente):
     headers = {"Authorization": auth_token}
 
     response = requests.delete(f"{ENDPOINT}/produtos/{produto_existente['_id']}", headers=headers)
@@ -233,12 +231,12 @@ def test_can_delete_product(auth_token, produto_existente):
     mensagem = ["Registro excluído com sucesso","Nenhum registro excluído"]
     assert body["message"] in mensagem
 
-def test_delete_produto_id_inexistente(auth_token, produto_existente):
+def test_deletar_produto_com_id_inexistente(auth_token, produto_existente):
     headers = {"Authorization": auth_token}
     fake_id = "0000000000000000"
 
     response = requests.delete(
-        f"{ENDPOINT}/usuarios/{fake_id}",
+        f"{ENDPOINT}/produtos/{fake_id}",
         headers=headers
     )
     assert response.status_code == 200
@@ -247,7 +245,7 @@ def test_delete_produto_id_inexistente(auth_token, produto_existente):
     mensagem = ["Registro excluído com sucesso", "Nenhum registro excluído"]
     assert body["message"] in mensagem
 
-def test_delete_produto_sem_autenticacao(produto_existente):
+def test_deletar_produto_sem_autenticacao(produto_existente):
     headers = {"Authorization": "Token inválido"}
 
     response = requests.delete(f"{ENDPOINT}/produtos/{produto_existente['_id']}", headers=headers)
@@ -256,8 +254,8 @@ def test_delete_produto_sem_autenticacao(produto_existente):
     body = response.json()
     assert body["message"] == "Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"
 
-def test_delete_produto_sem_admin(auth_token_dinamico_sem_admin, produto_existente):
-    headers = {"Authorization": auth_token_dinamico_sem_admin}
+def test_deletar_produto_sem_admin(auth_token_no_admin, produto_existente):
+    headers = {"Authorization": auth_token_no_admin}
 
     response = requests.delete(f"{ENDPOINT}/produtos/{produto_existente['_id']}", headers=headers)
     assert response.status_code == 403

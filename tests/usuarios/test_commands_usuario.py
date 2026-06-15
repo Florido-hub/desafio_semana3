@@ -4,7 +4,7 @@ import time
 from tests.config.settings import *
 from tests.fixtures.usuario import *
 
-def test_create_user():
+def test_criar_usuario_success():
     payload = {
         "nome": f"fulano{int(time.time()*100)}",
         "email": f"fulano{int(time.time()*100)}@email.com",
@@ -22,7 +22,7 @@ def test_create_user():
     user_id = body["_id"]
     requests.delete(f"{ENDPOINT}/usuarios/{user_id}")
 
-def test_create_user_email_em_uso(usuario_existente_admin):
+def test_criar_usuario_com_email_em_uso(usuario_existente_admin):
     payload = {
         "nome": f"fulano{int(time.time()*100)}",
         "email": usuario_existente_admin["email"],
@@ -36,7 +36,7 @@ def test_create_user_email_em_uso(usuario_existente_admin):
     body = response.json()
     assert body["message"] == "Este email já está sendo usado"
 
-def test_create_user_sem_body():
+def test_criar_usuario_com_body_vazio():
     payload = {
     }
 
@@ -49,7 +49,7 @@ def test_create_user_sem_body():
     assert body["password"] == "password é obrigatório"
     assert body["administrador"] == "administrador é obrigatório"
 
-def test_create_user_email_formato_inválido():
+def test_criar_usuario_com_email_inválido():
     payload = {
         "nome": f"fulano{int(time.time() * 100)}",
         "email": f"fulano{int(time.time() * 100)}",
@@ -64,7 +64,7 @@ def test_create_user_email_formato_inválido():
     assert body["email"] == "email deve ser um email válido"
 
 
-def test_update_user(usuario_existente_admin):
+def test_atualizar_usuario_success(usuario_existente_admin):
     update_payload = {
         "nome": "Nome atualizado",
         "email": usuario_existente_admin["email"],
@@ -83,7 +83,7 @@ def test_update_user(usuario_existente_admin):
     assert get_response.status_code == 200
     assert get_response.json()["nome"] == "Nome atualizado"
 
-def test_update_user_inexistente():
+def test_atualizar_usuario_inexistente():
     update_payload = {
         "nome": "Nome atualizado",
         "email": "email@atualizado.com",
@@ -105,7 +105,7 @@ def test_update_user_inexistente():
     usuario_id = body["_id"]
     requests.delete(f"{ENDPOINT}/usuarios/{usuario_id}")
 
-def test_update_user_email_em_uso(usuario_existente_admin):
+def test_atualizar_usuario_com_email_em_uso(usuario_existente_admin):
     payload = {
         "nome": f"fulano{int(time.time()*100)}",
         "email": "fulano@qa.com",
@@ -119,7 +119,7 @@ def test_update_user_email_em_uso(usuario_existente_admin):
     body = response.json()
     assert body["message"] == "Este email já está sendo usado"
 
-def test_update_user_campo_obrigatorio_ausente(usuario_existente_admin):
+def test_atualizar_usuario_com_campo_obrigatorio_ausente(usuario_existente_admin):
     payload = {
         "nome": "",
         "email": "fulano@qa.com",
@@ -131,10 +131,10 @@ def test_update_user_campo_obrigatorio_ausente(usuario_existente_admin):
     assert response.status_code == 400
 
     body = response.json()
-    print(body)
+    assert body["nome"] == "nome não pode ficar em branco"
 
 
-def test_delete_user_success(usuario_existente_admin):
+def test_deletar_usuario_success(usuario_existente_admin):
     response = requests.delete(f"{ENDPOINT}/usuarios/{usuario_existente_admin['_id']}")
     assert response.status_code == 200
 
@@ -143,7 +143,7 @@ def test_delete_user_success(usuario_existente_admin):
     assert body["message"] in mensagem
 
 #Olha aí o caso de não encontrar e retornar status 200, professor
-def test_delete_user_id_inexistente():
+def test_deletar_usuario_com_id_inexistente():
     fake_id = "000000000000000000000000"
 
     response = requests.delete(

@@ -4,11 +4,11 @@ from tests.config.settings import *
 from tests.fixtures.auth_token import *
 from tests.fixtures.usuario import *
 
-def test_can_get_users():
+def test_listar_usuario():
     response = requests.get(f"{ENDPOINT}/usuarios")
     assert response.status_code == 200
 
-def test_get_users_by_id(usuario_existente_admin):
+def test_listar_usuario_pelo_id(usuario_existente_admin):
     response = requests.get(f"{ENDPOINT}/usuarios/{usuario_existente_admin['_id']}")
     assert response.status_code == 200
 
@@ -20,7 +20,7 @@ def test_get_users_by_id(usuario_existente_admin):
     assert body["administrador"] == usuario_existente_admin["administrador"]
     assert body["_id"] == usuario_existente_admin["_id"]
 
-def test_get_users_by_id_not_found():
+def test_listar_usuario_com_id_inexistente():
     # ID com formato válido (16 chars alfanuméricos) mas inexistente
     response = requests.get(f"{ENDPOINT}/usuarios/0000000000000000")
     assert response.status_code == 400

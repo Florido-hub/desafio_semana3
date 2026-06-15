@@ -17,7 +17,7 @@ def test_login_success(usuario_existente_admin):
     assert "authorization" in body
     assert isinstance(body["authorization"], str)
 
-def test_login_senha_errada(usuario_existente_admin):
+def test_login_com_senha_errada(usuario_existente_admin):
     payload = {
         "email": f"{usuario_existente_admin['email']}",
         "password": "senha_errada"
@@ -29,7 +29,7 @@ def test_login_senha_errada(usuario_existente_admin):
     body = response.json()
     assert body["message"] == "Email e/ou senha inválidos"
 
-def test_login_email_inexistente(usuario_existente_admin):
+def test_login_com_email_inexistente(usuario_existente_admin):
     payload = {
         "email": "emailinexistente@teste.com",
         "password": f"{usuario_existente_admin['password']}"
@@ -41,7 +41,7 @@ def test_login_email_inexistente(usuario_existente_admin):
     body = response.json()
     assert body["message"] == "Email e/ou senha inválidos"
 
-def test_login_email_ausente_no_corpo(usuario_existente_admin):
+def test_login_com_email_ausente_no_body(usuario_existente_admin):
     payload = {
         "email": "",
         "password": f"{usuario_existente_admin['password']}"
@@ -53,7 +53,7 @@ def test_login_email_ausente_no_corpo(usuario_existente_admin):
     body = response.json()
     assert body["email"] == "email não pode ficar em branco"
 
-def test_login_senha_ausente_no_corpo(usuario_existente_admin):
+def test_login_com_senha_ausente_no_body(usuario_existente_admin):
     payload = {
         "email": f"{usuario_existente_admin['email']}",
         "password": ""
@@ -65,7 +65,7 @@ def test_login_senha_ausente_no_corpo(usuario_existente_admin):
     body = response.json()
     assert body["password"] == "password não pode ficar em branco"
 
-def test_login_campos_todos_ausentes(usuario_existente_admin):
+def test_login_com_body_vazio(usuario_existente_admin):
     payload = {
         "email": "",
         "password": ""

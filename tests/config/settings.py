@@ -1,1 +1,1 @@
-ENDPOINT = "https://compassuol.serverest.dev/"
+ENDPOINT = "https://compassuol.serverest.dev"
