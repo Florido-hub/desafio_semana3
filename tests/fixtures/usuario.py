@@ -8,7 +8,7 @@ from tests.config.settings import ENDPOINT
 def usuario_existente_admin():
     payload = {
         "nome": f"fulano {int(time.time())}",
-        "email": f"fluano{int(time.time())}@email.com",
+        "email": f"fulano{int(time.time())}@email.com",
         "password": "1234",
         "administrador": "true"
     }
@@ -35,7 +35,7 @@ def usuario_existente_admin():
 def usuario_existente_no_admin():
     payload = {
         "nome": f"fulano {int(time.time())}",
-        "email": f"fluano{int(time.time())}@email.com",
+        "email": f"fulano{int(time.time())}@email.com",
         "password": "1234",
         "administrador": "false"
     }

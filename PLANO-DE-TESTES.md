@@ -25,7 +25,7 @@ Validar o comportamento da API ServeRest (`https://compassuol.serverest.dev/`) n
 ### 3.1 Coberto
 
 - `POST /login` — autenticação com credenciais válidas e inválidas
-- `GET /usuarios` — listagem de usuários
+- `GET /usuarios` — listagem e filtro por `administrador`
 - `GET /usuarios/:id` — busca por ID (sucesso e ID inexistente)
 - `POST /usuarios` — cadastro de usuário (sucesso e e-mail duplicado)
 - `PUT /usuarios/:id` — atualização de usuário (sucesso)
@@ -44,7 +44,7 @@ Validar o comportamento da API ServeRest (`https://compassuol.serverest.dev/`) n
 - `DELETE /carrinhos/concluir-compra` — não implementado ainda
 - `DELETE /carrinhos/cancelar-compra` — não implementado ainda
 - Testes de carga ou performance
-- Testes de contrato (schema validation) — identificado como melhoria futura (`#Melhorar aqui usando o rolê do schema`)
+- Testes de contrato (schema validation) — identificado como melhoria futura
 - Testes de segurança (ex.: injeção, tokens expirados)
 
 ---
@@ -59,18 +59,18 @@ Legenda: ✅ Implementado · ⬜ A implementar · 🟢 Sucesso · 🔴 Erro
 |---|---|---|---|---|
 | L01 | 🟢 | Login com credenciais válidas | 200 + `authorization` no body | ✅ |
 | L02 | 🔴 | Login com senha incorreta | 401 + `"Email e/ou senha inválidos"` | ✅ |
-| L03 | 🔴 | Login com e-mail inexistente | 401 + `"Email e/ou senha inválidos"` | ⬜ |
-| L04 | 🔴 | Login sem o campo `email` no body | 400 + mensagem de campo obrigatório | ⬜ |
-| L05 | 🔴 | Login sem o campo `password` no body | 400 + mensagem de campo obrigatório | ⬜ |
-| L06 | 🔴 | Login com body vazio `{}` | 400 | ⬜ |
+| L03 | 🔴 | Login com e-mail inexistente | 401 + `"Email e/ou senha inválidos"` | ✅ |
+| L04 | 🔴 | Login sem o campo `email` no body | 400 | ✅ |
+| L05 | 🔴 | Login sem o campo `password` no body | 400 | ✅ |
+| L06 | 🔴 | Login com body vazio `{}` | 400 | ✅ |
 
 ### 4.2 `GET /usuarios`
 
 | # | Tipo | Cenário | Status esperado | Impl. |
 |---|---|---|---|---|
 | U01 | 🟢 | Listar todos os usuários | 200 + lista no body | ✅ |
-| U02 | 🟢 | Filtrar por `administrador=true` | 200 + lista filtrada | ⬜ |
-| U03 | 🟢 | Filtrar por `administrador=false` | 200 + lista filtrada | ⬜ |
+| U02 | 🟢 | Filtrar por `administrador=true` | 200 + todos os itens com `administrador=true` | ✅ |
+| U03 | 🟢 | Filtrar por `administrador=false` | 200 + todos os itens com `administrador=false` | ✅ |
 
 ### 4.3 `GET /usuarios/:id`
 
@@ -106,7 +106,7 @@ Legenda: ✅ Implementado · ⬜ A implementar · 🟢 Sucesso · 🔴 Erro
 |---|---|---|---|---|
 | U17 | 🟢 | Deletar usuário existente sem carrinho | 200 + `"Registro excluído com sucesso"` | ✅ |
 | U18 | 🔴 | Deletar usuário que possui carrinho ativo | 400 + `"Não é permitido excluir usuário com carrinho cadastrado"` | ⬜ |
-| U19 | � | Deletar usuário com ID inexistente | 200 + `"Nenhum registro excluído"` | ⬜ |
+| U19 | 🟢 | Deletar usuário com ID inexistente | 200 + `"Nenhum registro excluído"` | ⬜ |
 
 ### 4.7 `GET /produtos`
 
@@ -141,10 +141,10 @@ Legenda: ✅ Implementado · ⬜ A implementar · 🟢 Sucesso · 🔴 Erro
 | # | Tipo | Cenário | Status esperado | Impl. |
 |---|---|---|---|---|
 | P14 | 🟢 | Atualizar produto existente como admin | 200 + `"Registro alterado com sucesso"` | ✅ |
-| P15 | 🟢 | Atualizar produto inexistente como admin (upsert) | 201 | ⬜ |
+| P15 | 🟢 | Atualizar produto inexistente como admin (upsert) | 201 + `_id` no body | ⬜ |
 | P16 | 🔴 | Atualizar produto sem autenticação | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ⬜ |
-| P17 | 🔴 | Atualizar produto como usuário não-admin | 403 | ⬜ |
-| P18 | 🔴 | Atualizar produto com nome já usado por outro produto | 400 | ⬜ |
+| P17 | 🔴 | Atualizar produto como usuário não-admin | 403 + `"Rota exclusiva para administradores"` | ⬜ |
+| P18 | 🔴 | Atualizar produto com nome já usado por outro produto | 400 + `"Já existe produto com esse nome"` | ⬜ |
 
 ### 4.11 `DELETE /produtos/:id`
 
@@ -153,8 +153,8 @@ Legenda: ✅ Implementado · ⬜ A implementar · 🟢 Sucesso · 🔴 Erro
 | P19 | 🟢 | Deletar produto existente como admin | 200 + `"Registro excluído com sucesso"` | ✅ |
 | P20 | 🔴 | Deletar produto que está em carrinho ativo | 400 + `"Não é permitido excluir produto que faz parte do carrinho"` | ⬜ |
 | P21 | 🔴 | Deletar produto sem autenticação | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ⬜ |
-| P22 | 🔴 | Deletar produto como usuário não-admin | 403 | ⬜ |
-| P23 | 🔴 | Deletar produto com ID inexistente | 200 + `"Nenhum registro excluído"` | ⬜ |
+| P22 | 🔴 | Deletar produto como usuário não-admin | 403 + `"Rota exclusiva para administradores"` | ⬜ |
+| P23 | 🟢 | Deletar produto com ID inexistente | 200 + `"Nenhum registro excluído"` | ⬜ |
 
 ### 4.12 `GET /carrinhos`
 
@@ -167,7 +167,7 @@ Legenda: ✅ Implementado · ⬜ A implementar · 🟢 Sucesso · 🔴 Erro
 
 | # | Tipo | Cenário | Status esperado | Impl. |
 |---|---|---|---|---|
-| C03 | 🟢 | Buscar carrinho por ID válido | 200 + itens e total corretos | ⬜ |
+| C03 | 🟢 | Buscar carrinho por ID válido | 200 + itens, `precoTotal` e `quantidadeTotal` corretos | ⬜ |
 | C04 | 🔴 | Buscar carrinho com ID inexistente | 400 + `"Carrinho não encontrado"` | ⬜ |
 
 ### 4.14 `POST /carrinhos`
@@ -185,17 +185,17 @@ Legenda: ✅ Implementado · ⬜ A implementar · 🟢 Sucesso · 🔴 Erro
 
 | # | Tipo | Cenário | Status esperado | Impl. |
 |---|---|---|---|---|
-| C11 | 🟢 | Concluir compra com carrinho ativo | 200 + estoque decrementado | ⬜ |
-| C12 | 🟢 | Concluir compra sem carrinho ativo | 200 + `"Não foi encontrado carrinho..."` | ⬜ |
-| C13 | 🔴 | Concluir compra sem autenticação | 401 | ⬜ |
+| C11 | 🟢 | Concluir compra com carrinho ativo | 200 + `"Registro excluído com sucesso"` + estoque decrementado | ⬜ |
+| C12 | 🟢 | Concluir compra sem carrinho ativo | 200 + `"Não foi encontrado carrinho para esse usuário"` | ⬜ |
+| C13 | 🔴 | Concluir compra sem autenticação | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ⬜ |
 
 ### 4.16 `DELETE /carrinhos/cancelar-compra`
 
 | # | Tipo | Cenário | Status esperado | Impl. |
 |---|---|---|---|---|
-| C14 | 🟢 | Cancelar compra com carrinho ativo | 200 + estoque restaurado | ⬜ |
-| C15 | 🟢 | Cancelar compra sem carrinho ativo | 200 + `"Não foi encontrado carrinho..."` | ⬜ |
-| C16 | 🔴 | Cancelar compra sem autenticação | 401 | ⬜ |
+| C14 | 🟢 | Cancelar compra com carrinho ativo | 200 + `"Registro excluído com sucesso"` + estoque restaurado | ⬜ |
+| C15 | 🟢 | Cancelar compra sem carrinho ativo | 200 + `"Não foi encontrado carrinho para esse usuário"` | ⬜ |
+| C16 | 🔴 | Cancelar compra sem autenticação | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ⬜ |
 
 ---
 

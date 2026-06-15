@@ -45,17 +45,21 @@ def test_update_user(usuario_existente_admin):
         "administrador": usuario_existente_admin["administrador"]
     }
 
-    response = requests.put(f"{ENDPOINT}/usuarios/{usuario_existente_admin['_id']}",json=update_payload)
+    response = requests.put(
+        f"{ENDPOINT}/usuarios/{usuario_existente_admin['_id']}", json=update_payload
+    )
     assert response.status_code == 200
+    assert response.json()["message"] == "Registro alterado com sucesso"
 
-    body = response.json()
-    assert body["message"] == "Registro alterado com sucesso"
+    # Verifica que a alteração foi persistida
+    get_response = requests.get(f"{ENDPOINT}/usuarios/{usuario_existente_admin['_id']}")
+    assert get_response.status_code == 200
+    assert get_response.json()["nome"] == "Nome atualizado"
 
 
-def test_delete_user_sucess(usuario_existente_admin):
+def test_delete_user_success(usuario_existente_admin):
     response = requests.delete(f"{ENDPOINT}/usuarios/{usuario_existente_admin['_id']}")
     assert response.status_code == 200
 
     body = response.json()
-    mensagem = ["Registro excluído com sucesso", "Nenhum registro excluído"]
-    assert body["message"] in mensagem
+    assert body["message"] == "Registro excluído com sucesso"
