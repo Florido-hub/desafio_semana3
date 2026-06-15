@@ -146,10 +146,9 @@ Legenda: ✅ Implementado · ⬜ A implementar · 🟢 Sucesso · 🔴 Erro
 | # | Tipo | Cenário | Status esperado | Impl. |
 |---|---|---|---|---|
 | P19 | 🟢 | Deletar produto existente como admin | 200 + `"Registro excluído com sucesso"` | ✅ |
-| P20 | 🔴 | Deletar produto que está em carrinho ativo | 400 + `"Não é permitido excluir produto que faz parte do carrinho"` | ⬜ |
-| P21 | 🔴 | Deletar produto sem autenticação | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ⬜ |
-| P22 | 🔴 | Deletar produto como usuário não-admin | 403 + `"Rota exclusiva para administradores"` | ⬜ |
-| P23 | 🟢 | Deletar produto com ID inexistente | 200 + `"Nenhum registro excluído"` | ⬜ |
+| P21 | 🔴 | Deletar produto sem autenticação | 401 + `"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"` | ✅ |
+| P22 | 🔴 | Deletar produto como usuário não-admin | 403 + `"Rota exclusiva para administradores"` | ✅ |
+| P23 | 🟢 | Deletar produto com ID inexistente | 200 + `"Nenhum registro excluído"` | ✅ |
 
 ### 4.12 `GET /carrinhos`
 

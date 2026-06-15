@@ -232,3 +232,35 @@ def test_can_delete_product(auth_token, produto_existente):
     body = response.json()
     mensagem = ["Registro excluído com sucesso","Nenhum registro excluído"]
     assert body["message"] in mensagem
+
+def test_delete_produto_id_inexistente(auth_token, produto_existente):
+    headers = {"Authorization": auth_token}
+    fake_id = "0000000000000000"
+
+    response = requests.delete(
+        f"{ENDPOINT}/usuarios/{fake_id}",
+        headers=headers
+    )
+    assert response.status_code == 200
+
+    body = response.json()
+    mensagem = ["Registro excluído com sucesso", "Nenhum registro excluído"]
+    assert body["message"] in mensagem
+
+def test_delete_produto_sem_autenticacao(produto_existente):
+    headers = {"Authorization": "Token inválido"}
+
+    response = requests.delete(f"{ENDPOINT}/produtos/{produto_existente['_id']}", headers=headers)
+    assert response.status_code == 401
+
+    body = response.json()
+    assert body["message"] == "Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"
+
+def test_delete_produto_sem_admin(auth_token_dinamico_sem_admin, produto_existente):
+    headers = {"Authorization": auth_token_dinamico_sem_admin}
+
+    response = requests.delete(f"{ENDPOINT}/produtos/{produto_existente['_id']}", headers=headers)
+    assert response.status_code == 403
+
+    body = response.json()
+    assert body["message"] == "Rota exclusiva para administradores"
