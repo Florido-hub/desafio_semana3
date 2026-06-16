@@ -1,4 +1,4 @@
-# air_semana3 — Suite de Testes da API ServeRest
+# Suite de Testes da API ServeRest
 
 Este repositório contém a suite de testes automatizados desenvolvida como entrega do **Desafio Técnico da Sprint 2** do programa **AI Driven Quality Engineering**, promovido pela **AIR Academy**.
 
