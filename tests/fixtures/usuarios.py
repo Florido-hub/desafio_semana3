@@ -1,14 +1,17 @@
+import random
+
 import pytest
 import requests
 import time
 
-from tests.config.settings import ENDPOINT
+from tests.config.constants import ENDPOINT
 
 @pytest.fixture
 def usuario_existente_admin():
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
-        "nome": f"fulano {int(time.time())}",
-        "email": f"fulano{int(time.time())}@email.com",
+        "nome": f"fulano {sufixo}",
+        "email": f"fulano{sufixo}@email.com",
         "password": "1234",
         "administrador": "true"
     }
@@ -33,9 +36,10 @@ def usuario_existente_admin():
 
 @pytest.fixture
 def usuario_existente_no_admin():
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
-        "nome": f"fulano {int(time.time())}",
-        "email": f"fulano{int(time.time())}@email.com",
+        "nome": f"beltrano {sufixo}",
+        "email": f"beltrano{sufixo}@email.com",
         "password": "1234",
         "administrador": "false"
     }

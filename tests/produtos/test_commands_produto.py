@@ -1,15 +1,18 @@
+import random
+
+import pytest
 import requests
-from tests.fixtures.products import *
-from tests.fixtures.auth_token import *
-from tests.fixtures.usuario import *
+import time
+from tests.config.constants import *
 
 
 def test_criar_produto_success(auth_token):
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
-        "nome": f"Produto{int(time.time()*100)}",
-        "preco": int(time.time()*100),
+        "nome": f"Produto{sufixo}",
+        "preco": sufixo,
         "descricao": "Produto de teste",
-        "quantidade": int(time.time()*100),
+        "quantidade": sufixo,
     }
 
     headers = {"Authorization": auth_token}
@@ -26,11 +29,12 @@ def test_criar_produto_success(auth_token):
 
 
 def test_criar_produto_sem_header_de_autenticacao():
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
-        "nome": f"Produto{int(time.time() * 100)}",
-        "preco": int(time.time() * 100),
+        "nome": f"Produto{sufixo}",
+        "preco": sufixo,
         "descricao": "Produto de teste",
-        "quantidade": int(time.time() * 100),
+        "quantidade": sufixo,
     }
 
     response = requests.post(f"{ENDPOINT}/produtos", json=payload)
@@ -40,11 +44,12 @@ def test_criar_produto_sem_header_de_autenticacao():
     assert body["message"] == "Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"
 
 def test_criar_produto_com_token_invalido():
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
-        "nome": f"Produto{int(time.time() * 100)}",
-        "preco": int(time.time() * 100),
+        "nome": f"Produto{sufixo}",
+        "preco": sufixo,
         "descricao": "Produto de teste",
-        "quantidade": int(time.time() * 100),
+        "quantidade": sufixo,
     }
 
     header = {"Authorization": "Token invalido ou expirado"}
@@ -56,11 +61,12 @@ def test_criar_produto_com_token_invalido():
     assert body["message"] == "Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"
 
 def test_criar_produto_sem_admin(auth_token_no_admin):
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
-        "nome": f"Produto{int(time.time() * 100)}",
-        "preco": int(time.time() * 100),
+        "nome": f"Produto{sufixo}",
+        "preco": sufixo,
         "descricao": "Produto de teste",
-        "quantidade": int(time.time() * 100),
+        "quantidade": sufixo,
     }
 
     headers = {"Authorization": auth_token_no_admin}
@@ -72,11 +78,12 @@ def test_criar_produto_sem_admin(auth_token_no_admin):
     assert body["message"] == "Rota exclusiva para administradores"
 
 def test_criar_produto_sem_nome(auth_token, produto_existente):
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
         "nome": "",
-        "preco": int(time.time() * 100),
+        "preco": sufixo,
         "descricao": "Produto de teste",
-        "quantidade": int(time.time() * 100),
+        "quantidade": sufixo,
     }
 
     headers = {"Authorization": auth_token}
@@ -88,11 +95,12 @@ def test_criar_produto_sem_nome(auth_token, produto_existente):
     assert body['nome'] == "nome não pode ficar em branco"
 
 def test_criar_produto_sem_preco(auth_token, produto_existente):
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
-        "nome": f"Produto{int(time.time() * 100)}",
+        "nome": f"Produto{sufixo}",
         "preco": "",
         "descricao": "Produto de teste",
-        "quantidade": int(time.time() * 100),
+        "quantidade": sufixo,
     }
 
     headers = {"Authorization": auth_token}
@@ -104,11 +112,12 @@ def test_criar_produto_sem_preco(auth_token, produto_existente):
     assert body['preco'] == "preco deve ser um número"
 
 def test_criar_produto_preco_negativo(auth_token, produto_existente):
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
-        "nome": f"Produto{int(time.time() * 100)}",
+        "nome": f"Produto{sufixo}",
         "preco": -10,
         "descricao": "Produto de teste",
-        "quantidade": int(time.time() * 100),
+        "quantidade": sufixo,
     }
 
     headers = {"Authorization": auth_token}
@@ -120,9 +129,10 @@ def test_criar_produto_preco_negativo(auth_token, produto_existente):
     assert body['preco'] == "preco deve ser um número positivo"
 
 def test_criar_produto_quantidade_negativa(auth_token, produto_existente):
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
-        "nome": f"Produto{int(time.time() * 100)}",
-        "preco": int(time.time() * 100),
+        "nome": f"Produto{sufixo}",
+        "preco": sufixo,
         "descricao": "Produto de teste",
         "quantidade": -100,
     }
@@ -136,11 +146,12 @@ def test_criar_produto_quantidade_negativa(auth_token, produto_existente):
     assert body['quantidade'] == "quantidade deve ser maior ou igual a 0"
 
 def test_atualizar_produto_success(auth_token, produto_existente):
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
         "nome": produto_existente["nome"],
-        "preco": int(time.time() * 100),
+        "preco": sufixo,
         "descricao": produto_existente["descricao"],
-        "quantidade": int(time.time() * 100),
+        "quantidade": sufixo,
     }
 
     headers = {"Authorization": auth_token}
@@ -152,11 +163,12 @@ def test_atualizar_produto_success(auth_token, produto_existente):
     assert body["message"] == "Registro alterado com sucesso"
 
 def test_atualizar_produto_inexistente(auth_token, produto_existente):
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
-        "nome": f"Produto{int(time.time() * 100)}",
-        "preco": int(time.time() * 100),
+        "nome": f"Produto{sufixo}",
+        "preco": sufixo,
         "descricao": "Produto de teste",
-        "quantidade": int(time.time() * 100),
+        "quantidade": sufixo,
     }
 
     headers = {"Authorization": auth_token}
@@ -174,11 +186,12 @@ def test_atualizar_produto_inexistente(auth_token, produto_existente):
     requests.delete(f"{ENDPOINT}/produtos/{produto_id}", headers=headers)
 
 def test_atualizar_produto_sem_token(produto_existente):
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
-        "nome": f"Produto{int(time.time() * 100)}",
-        "preco": int(time.time() * 100),
+        "nome": f"Produto{sufixo}",
+        "preco": sufixo,
         "descricao": "Produto de teste",
-        "quantidade": int(time.time() * 100),
+        "quantidade": sufixo,
     }
 
     headers = {"Authorization": "Token inválido"}
@@ -190,11 +203,12 @@ def test_atualizar_produto_sem_token(produto_existente):
     assert body["message"] == "Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"
 
 def test_atualizar_produto_sem_admin(auth_token_no_admin, produto_existente):
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
         "nome": produto_existente["nome"],
-        "preco": int(time.time() * 100),
+        "preco": sufixo,
         "descricao": produto_existente["descricao"],
-        "quantidade": int(time.time() * 100),
+        "quantidade": sufixo,
     }
 
     headers = {"Authorization": auth_token_no_admin}
@@ -206,11 +220,12 @@ def test_atualizar_produto_sem_admin(auth_token_no_admin, produto_existente):
     assert body["message"] == "Rota exclusiva para administradores"
 
 def test_atualizar_produto_com_mesmo_nome(auth_token, produto_existente):
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
         "nome": "Logitech MX Vertical",
-        "preco": int(time.time() * 100),
+        "preco": sufixo,
         "descricao": produto_existente["descricao"],
-        "quantidade": int(time.time() * 100),
+        "quantidade": sufixo,
     }
 
     headers = {"Authorization": auth_token}

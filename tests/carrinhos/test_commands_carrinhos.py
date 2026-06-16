@@ -1,11 +1,8 @@
-import requests
 import pytest
-from tests.fixtures.products import *
-from tests.fixtures.usuario import *
-from tests.config.settings import *
-from tests.fixtures.auth_token import *
+import requests
+from tests.config.constants import *
 
-def test_criar_carrinho_sucess(produto_existente, auth_token):
+def test_criar_carrinho_success(produto_existente, auth_token):
     headers = {"Authorization": auth_token}
 
     cart_payload = {

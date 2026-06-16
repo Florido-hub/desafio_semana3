@@ -1,6 +1,6 @@
+import pytest
 import requests
-from tests.config.settings import *
-from tests.fixtures.usuario import *
+from tests.config.constants import *
 
 def test_login_success(usuario_existente_admin):
     payload = {

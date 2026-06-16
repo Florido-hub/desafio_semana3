@@ -2,7 +2,7 @@ import pytest
 import requests
 import time
 
-from tests.config.settings import ENDPOINT
+from tests.config.constants import ENDPOINT
 from tests.fixtures.auth_token import *
 
 

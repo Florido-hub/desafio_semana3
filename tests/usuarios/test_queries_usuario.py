@@ -1,8 +1,6 @@
 import pytest
 import requests
-from tests.config.settings import *
-from tests.fixtures.auth_token import *
-from tests.fixtures.usuario import *
+from tests.config.constants import *
 
 def test_listar_usuario():
     response = requests.get(f"{ENDPOINT}/usuarios")

@@ -1,6 +1,6 @@
-from tests.fixtures.products import *
-from tests.fixtures.auth_token import *
-
+import pytest
+import requests
+from tests.config.constants import *
 
 def test_listar_produto():
     response = requests.get(f"{ENDPOINT}/produtos")

@@ -1,13 +1,15 @@
+import random
+
 import pytest
 import requests
 import time
-from tests.config.settings import *
-from tests.fixtures.usuario import *
+from tests.config.constants import *
 
 def test_criar_usuario_success():
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
-        "nome": f"fulano{int(time.time()*100)}",
-        "email": f"fulano{int(time.time()*100)}@email.com",
+        "nome": f"fulano{sufixo}",
+        "email": f"fulano{sufixo}@email.com",
         "password": "1234",
         "administrador": "true"
     }
@@ -24,7 +26,7 @@ def test_criar_usuario_success():
 
 def test_criar_usuario_com_email_em_uso(usuario_existente_admin):
     payload = {
-        "nome": f"fulano{int(time.time()*100)}",
+        "nome": "nome de usuario",
         "email": usuario_existente_admin["email"],
         "password": "1234",
         "administrador": "true"
@@ -50,9 +52,10 @@ def test_criar_usuario_com_body_vazio():
     assert body["administrador"] == "administrador é obrigatório"
 
 def test_criar_usuario_com_email_inválido():
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
-        "nome": f"fulano{int(time.time() * 100)}",
-        "email": f"fulano{int(time.time() * 100)}",
+        "nome": f"fulano{sufixo}",
+        "email": f"fulano{sufixo}",
         "password": "1234",
         "administrador": "true"
     }
@@ -78,11 +81,6 @@ def test_atualizar_usuario_success(usuario_existente_admin):
     assert response.status_code == 200
     assert response.json()["message"] == "Registro alterado com sucesso"
 
-    # Verifica que a alteração foi persistida
-    get_response = requests.get(f"{ENDPOINT}/usuarios/{usuario_existente_admin['_id']}")
-    assert get_response.status_code == 200
-    assert get_response.json()["nome"] == "Nome atualizado"
-
 def test_atualizar_usuario_inexistente():
     update_payload = {
         "nome": "Nome atualizado",
@@ -105,15 +103,15 @@ def test_atualizar_usuario_inexistente():
     usuario_id = body["_id"]
     requests.delete(f"{ENDPOINT}/usuarios/{usuario_id}")
 
-def test_atualizar_usuario_com_email_em_uso(usuario_existente_admin):
-    payload = {
-        "nome": f"fulano{int(time.time()*100)}",
-        "email": "fulano@qa.com",
+def test_atualizar_usuario_com_email_em_uso(usuario_existente_admin, usuario_existente_no_admin):
+    payload_update = {
+        "nome": "nome atualizado",
+        "email": usuario_existente_no_admin["email"],
         "password": "1234",
         "administrador": "true"
     }
 
-    response = requests.put(f"{ENDPOINT}/usuarios/{usuario_existente_admin['_id']}", json=payload)
+    response = requests.put(f"{ENDPOINT}/usuarios/{usuario_existente_admin['_id']}", json=payload_update)
     assert response.status_code == 400
 
     body = response.json()

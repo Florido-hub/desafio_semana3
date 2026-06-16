@@ -1,8 +1,8 @@
 import pytest
 import requests
 
-from tests.config.settings import *
-from tests.fixtures.usuario import *
+from tests.config.constants import *
+from tests.fixtures.usuarios import *
 
 
 @pytest.fixture
