@@ -6,15 +6,24 @@ from tests.fixtures.usuarios import *
 
 
 @pytest.fixture
-def auth_token(usuario_existente_admin):
+def auth_token():
+    sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
-        "email": usuario_existente_admin["email"],
-        "password": usuario_existente_admin["password"]
+        "nome": "login user",
+        "email": f"login{sufixo}@email.com",
+        "password": "1234",
+        "administrador": "true"
     }
-    response = requests.post(
-        f"{ENDPOINT}/login", json=payload
-    )
+
+    requests.post(f"{ENDPOINT}/usuarios", json=payload)
+
+    response = requests.post(f"{ENDPOINT}/login", json={
+        "email": payload["email"],
+        "password": payload["password"]
+    })
+
     assert response.status_code == 200
+
     return response.json()["authorization"]
 
 @pytest.fixture

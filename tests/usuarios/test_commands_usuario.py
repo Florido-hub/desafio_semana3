@@ -38,18 +38,20 @@ def test_criar_usuario_com_email_em_uso(usuario_existente_admin):
     body = response.json()
     assert body["message"] == "Este email já está sendo usado"
 
-def test_criar_usuario_com_body_vazio():
+@pytest.mark.parametrize("campo,expected", [
+    ("nome", "nome é obrigatório"),
+    ("email", "email é obrigatório"),
+    ("password", "password é obrigatório"),
+    ("administrador", "administrador é obrigatório"),
+])
+def test_criar_usuario_com_body_vazio(campo, expected):
     payload = {
     }
 
+    payload[campo] = ""
+
     response = requests.post(f"{ENDPOINT}/usuarios", json=payload)
     assert response.status_code == 400
-
-    body = response.json()
-    assert body["nome"] == "nome é obrigatório"
-    assert body["email"] == "email é obrigatório"
-    assert body["password"] == "password é obrigatório"
-    assert body["administrador"] == "administrador é obrigatório"
 
 def test_criar_usuario_com_email_inválido():
     sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"

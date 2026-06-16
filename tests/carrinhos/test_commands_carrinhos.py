@@ -1,6 +1,7 @@
 import pytest
 import requests
 from tests.config.constants import *
+import tests.fixtures.auth_token
 
 def test_criar_carrinho_success(produto_existente, auth_token):
     headers = {"Authorization": auth_token}

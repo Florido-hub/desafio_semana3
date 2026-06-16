@@ -1,9 +1,9 @@
 import random
-
 import pytest
 import requests
 import time
 from tests.config.constants import *
+import tests.fixtures.auth_token
 
 
 def test_criar_produto_success(auth_token):

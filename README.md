@@ -1,4 +1,4 @@
-# Suite de Testes da API ServeRest
+# air_semana3 — Suite de Testes da API ServeRest
 
 Este repositório contém a suite de testes automatizados desenvolvida como entrega do **Desafio Técnico da Sprint 2** do programa **AI Driven Quality Engineering**, promovido pela **AIR Academy**.
 
@@ -34,8 +34,9 @@ Validar o comportamento da API ServeRest nos quatro domínios — garantindo que
 | Ferramenta | Uso |
 |---|---|
 | Python 3 | Linguagem principal |
-| pytest | Framework de testes e fixtures |
+| pytest | Framework de testes, fixtures e parametrize |
 | requests | Cliente HTTP para todas as chamadas à API |
+| jsonschema | Validação da estrutura das respostas (Extra 1) |
 
 ---
 
@@ -85,36 +86,51 @@ pytest -x
 
 ```
 tests/
+├── conftest.py                        # Registro central de fixtures via pytest_plugins
 ├── config/
-│   └── settings.py               # ENDPOINT base da API
+│   └── constants.py                   # ENDPOINT base da API
 ├── fixtures/
-│   ├── usuario.py                # usuario_existente_admin / usuario_existente_no_admin
-│   ├── auth_token.py             # auth_token (admin) / auth_token_no_admin
-│   └── products.py               # produto_existente
+│   ├── usuarios.py                    # usuario_existente_admin / usuario_existente_no_admin
+│   ├── auth_token.py                  # auth_token (admin) / auth_token_no_admin
+│   ├── produtos.py                    # produto_existente
+│   └── utils/
+│       ├── usuario_schema.py          # USUARIO_SCHEMA / USUARIO_SCHEMA_ID
+│       └── produto_schema.py          # PRODUTO_SCHEMA / PRODUTO_SCHEMA_ID
 ├── login/
 │   └── test_login.py
 ├── usuarios/
-│   ├── test_queries_usuario.py   # GET /usuarios
-│   └── test_commands_usuario.py  # POST, PUT, DELETE /usuarios
+│   ├── test_queries_usuario.py        # GET /usuarios
+│   └── test_commands_usuario.py       # POST, PUT, DELETE /usuarios
 ├── produtos/
-│   ├── test_queries_produto.py   # GET /produtos
-│   └── test_commands_produto.py  # POST, PUT, DELETE /produtos
+│   ├── test_queries_produto.py        # GET /produtos
+│   └── test_commands_produto.py       # POST, PUT, DELETE /produtos
 └── carrinhos/
-    ├── test_queries_carrinhos.py  # GET /carrinhos (a implementar)
-    └── test_commands_carrinhos.py # POST /carrinhos
+    ├── test_queries_carrinhos.py       # GET /carrinhos (a implementar)
+    └── test_commands_carrinhos.py      # POST /carrinhos
 ```
 
 ### Fixtures
 
-As fixtures seguem o padrão **create → yield → teardown**: criam o recurso via POST antes do teste, cedem os dados para o teste, e deletam via DELETE após a execução — mesmo que o teste falhe.
+As fixtures seguem o padrão **create → yield → teardown** e são registradas centralmente no `conftest.py`, sem necessidade de imports manuais nos arquivos de teste.
 
 | Fixture | Descrição |
 |---|---|
-| `usuario_existente_admin` | Cria e remove um usuário administrador |
-| `usuario_existente_no_admin` | Cria e remove um usuário não-administrador |
-| `auth_token` | Depende de `usuario_existente_admin` — faz login e retorna o Bearer token |
+| `usuario_existente_admin` | Cria e remove um usuário administrador com sufixo único |
+| `usuario_existente_no_admin` | Cria e remove um usuário não-administrador com sufixo único |
+| `auth_token` | Cria um usuário admin dedicado, faz login e retorna o Bearer token |
 | `auth_token_no_admin` | Depende de `usuario_existente_no_admin` — faz login e retorna o Bearer token |
-| `produto_existente` | Depende de `auth_token` — cria e remove um produto via admin |
+| `produto_existente` | Depende de `auth_token` — cria e remove um produto |
+
+### Validação de Schema (Extra 1)
+
+Schemas JSON definidos em `fixtures/utils/` e aplicados nos testes de GET via `jsonschema.validate`:
+
+| Schema | Endpoint validado |
+|---|---|
+| `USUARIO_SCHEMA` | GET `/usuarios` — valida lista com `quantidade` e array de usuários |
+| `USUARIO_SCHEMA_ID` | GET `/usuarios/:id` — valida objeto de usuário individual |
+| `PRODUTO_SCHEMA` | GET `/produtos` — valida lista com `quantidade` e array de produtos |
+| `PRODUTO_SCHEMA_ID` | GET `/produtos/:id` — valida objeto de produto individual |
 
 ---
 
@@ -166,12 +182,12 @@ Os domínios **Login**, **Usuários** e **Produtos** atingiram **100% de cobertu
 
 ---
 
-## Plano de Testes
-
-Consulte o [PLANO-DE-TESTES.md](./PLANO-DE-TESTES.md) para a descrição completa de todos os cenários mapeados, estratégia, escopo e critérios de qualidade.
-
----
-
 ## Bug Report
 
 Bugs encontrados durante a execução dos testes estão reportados na aba [Issues](../../issues) do repositório, seguindo o padrão: passos para reproduzir, comportamento esperado, comportamento obtido, severidade e evidências.
+
+---
+
+## Plano de Testes
+
+Consulte o [PLANO-DE-TESTES.md](./PLANO-DE-TESTES.md) para a descrição completa de todos os cenários mapeados, estratégia, escopo e critérios de qualidade.
