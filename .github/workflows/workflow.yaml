@@ -13,9 +13,9 @@ jobs:
 
     # 2. Configura o ambiente do Python na máquina virtual
     - name: Configurar Python
-      uses: actions/actions-setup-python@v5
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.11' # Versão estável do Python
+        python-version: '3.11'
 
     # 3. Faz o cache das dependências para deixar as próximas execuções mais rápidas
     - name: Cache de dependências do Python
