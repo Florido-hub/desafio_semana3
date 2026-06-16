@@ -5,6 +5,8 @@ import requests
 import time
 from tests.config.constants import *
 
+@pytest.mark.create
+@pytest.mark.create_user
 def test_criar_usuario_success():
     sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
@@ -24,6 +26,8 @@ def test_criar_usuario_success():
     user_id = body["_id"]
     requests.delete(f"{ENDPOINT}/usuarios/{user_id}")
 
+@pytest.mark.create
+@pytest.mark.create_user
 def test_criar_usuario_com_email_em_uso(usuario_existente_admin):
     payload = {
         "nome": "nome de usuario",
@@ -38,6 +42,8 @@ def test_criar_usuario_com_email_em_uso(usuario_existente_admin):
     body = response.json()
     assert body["message"] == "Este email já está sendo usado"
 
+@pytest.mark.create
+@pytest.mark.create_user
 @pytest.mark.parametrize("campo,expected", [
     ("nome", "nome é obrigatório"),
     ("email", "email é obrigatório"),
@@ -53,6 +59,8 @@ def test_criar_usuario_com_body_vazio(campo, expected):
     response = requests.post(f"{ENDPOINT}/usuarios", json=payload)
     assert response.status_code == 400
 
+@pytest.mark.create
+@pytest.mark.create_user
 def test_criar_usuario_com_email_inválido():
     sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
@@ -68,7 +76,8 @@ def test_criar_usuario_com_email_inválido():
     body = response.json()
     assert body["email"] == "email deve ser um email válido"
 
-
+@pytest.mark.update
+@pytest.mark.update_user
 def test_atualizar_usuario_success(usuario_existente_admin):
     update_payload = {
         "nome": "Nome atualizado",
@@ -83,6 +92,8 @@ def test_atualizar_usuario_success(usuario_existente_admin):
     assert response.status_code == 200
     assert response.json()["message"] == "Registro alterado com sucesso"
 
+@pytest.mark.update
+@pytest.mark.update_user
 def test_atualizar_usuario_inexistente():
     update_payload = {
         "nome": "Nome atualizado",
@@ -105,6 +116,8 @@ def test_atualizar_usuario_inexistente():
     usuario_id = body["_id"]
     requests.delete(f"{ENDPOINT}/usuarios/{usuario_id}")
 
+@pytest.mark.update
+@pytest.mark.update_user
 def test_atualizar_usuario_com_email_em_uso(usuario_existente_admin, usuario_existente_no_admin):
     payload_update = {
         "nome": "nome atualizado",
@@ -119,6 +132,8 @@ def test_atualizar_usuario_com_email_em_uso(usuario_existente_admin, usuario_exi
     body = response.json()
     assert body["message"] == "Este email já está sendo usado"
 
+@pytest.mark.update
+@pytest.mark.update_user
 def test_atualizar_usuario_com_campo_obrigatorio_ausente(usuario_existente_admin):
     payload = {
         "nome": "",
@@ -133,7 +148,8 @@ def test_atualizar_usuario_com_campo_obrigatorio_ausente(usuario_existente_admin
     body = response.json()
     assert body["nome"] == "nome não pode ficar em branco"
 
-
+@pytest.mark.delete
+@pytest.mark.delete_user
 def test_deletar_usuario_success(usuario_existente_admin):
     response = requests.delete(f"{ENDPOINT}/usuarios/{usuario_existente_admin['_id']}")
     assert response.status_code == 200
@@ -143,6 +159,8 @@ def test_deletar_usuario_success(usuario_existente_admin):
     assert body["message"] in mensagem
 
 #Olha aí o caso de não encontrar e retornar status 200, professor
+@pytest.mark.delete
+@pytest.mark.delete_user
 def test_deletar_usuario_com_id_inexistente():
     fake_id = "000000000000000000000000"
 

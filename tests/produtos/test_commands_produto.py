@@ -5,7 +5,8 @@ import time
 from tests.config.constants import *
 import tests.fixtures.auth_token
 
-
+@pytest.mark.create
+@pytest.mark.create_product
 def test_criar_produto_success(auth_token):
     sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
@@ -27,7 +28,8 @@ def test_criar_produto_success(auth_token):
     produto_id = body["_id"]
     requests.delete(f"{ENDPOINT}/produtos/{produto_id}", headers=headers)
 
-
+@pytest.mark.create
+@pytest.mark.create_product
 def test_criar_produto_sem_header_de_autenticacao():
     sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
@@ -43,6 +45,8 @@ def test_criar_produto_sem_header_de_autenticacao():
     body = response.json()
     assert body["message"] == "Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"
 
+@pytest.mark.create
+@pytest.mark.create_product
 def test_criar_produto_com_token_invalido():
     sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
@@ -60,6 +64,8 @@ def test_criar_produto_com_token_invalido():
     body = response.json()
     assert body["message"] == "Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"
 
+@pytest.mark.create
+@pytest.mark.create_product
 def test_criar_produto_sem_admin(auth_token_no_admin):
     sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
@@ -77,6 +83,8 @@ def test_criar_produto_sem_admin(auth_token_no_admin):
     body = response.json()
     assert body["message"] == "Rota exclusiva para administradores"
 
+@pytest.mark.create
+@pytest.mark.create_product
 def test_criar_produto_sem_nome(auth_token, produto_existente):
     sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
@@ -94,6 +102,8 @@ def test_criar_produto_sem_nome(auth_token, produto_existente):
     body = response.json()
     assert body['nome'] == "nome não pode ficar em branco"
 
+@pytest.mark.create
+@pytest.mark.create_product
 def test_criar_produto_sem_preco(auth_token, produto_existente):
     sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
@@ -111,6 +121,8 @@ def test_criar_produto_sem_preco(auth_token, produto_existente):
     body = response.json()
     assert body['preco'] == "preco deve ser um número"
 
+@pytest.mark.create
+@pytest.mark.create_product
 def test_criar_produto_preco_negativo(auth_token, produto_existente):
     sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
@@ -128,6 +140,8 @@ def test_criar_produto_preco_negativo(auth_token, produto_existente):
     body = response.json()
     assert body['preco'] == "preco deve ser um número positivo"
 
+@pytest.mark.create
+@pytest.mark.create_product
 def test_criar_produto_quantidade_negativa(auth_token, produto_existente):
     sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
@@ -145,6 +159,8 @@ def test_criar_produto_quantidade_negativa(auth_token, produto_existente):
     body = response.json()
     assert body['quantidade'] == "quantidade deve ser maior ou igual a 0"
 
+@pytest.mark.update
+@pytest.mark.update_product
 def test_atualizar_produto_success(auth_token, produto_existente):
     sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
@@ -162,6 +178,8 @@ def test_atualizar_produto_success(auth_token, produto_existente):
     body = response.json()
     assert body["message"] == "Registro alterado com sucesso"
 
+@pytest.mark.update
+@pytest.mark.update_product
 def test_atualizar_produto_inexistente(auth_token, produto_existente):
     sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
@@ -185,6 +203,8 @@ def test_atualizar_produto_inexistente(auth_token, produto_existente):
     produto_id = body["_id"]
     requests.delete(f"{ENDPOINT}/produtos/{produto_id}", headers=headers)
 
+@pytest.mark.update
+@pytest.mark.update_product
 def test_atualizar_produto_sem_token(produto_existente):
     sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
@@ -202,6 +222,8 @@ def test_atualizar_produto_sem_token(produto_existente):
     body = response.json()
     assert body["message"] == "Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"
 
+@pytest.mark.update
+@pytest.mark.update_product
 def test_atualizar_produto_sem_admin(auth_token_no_admin, produto_existente):
     sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
@@ -219,6 +241,8 @@ def test_atualizar_produto_sem_admin(auth_token_no_admin, produto_existente):
     body = response.json()
     assert body["message"] == "Rota exclusiva para administradores"
 
+@pytest.mark.update
+@pytest.mark.update_product
 def test_atualizar_produto_com_mesmo_nome(auth_token, produto_existente):
     sufixo = f"{int(time.time()) * 100 + random.randint(1, 1000)}"
     payload = {
@@ -236,6 +260,8 @@ def test_atualizar_produto_com_mesmo_nome(auth_token, produto_existente):
     body = response.json()
     assert body["message"] == "Já existe produto com esse nome"
 
+@pytest.mark.delete
+@pytest.mark.delete_product
 def test_deletar_produto_success(auth_token, produto_existente):
     headers = {"Authorization": auth_token}
 
@@ -246,6 +272,8 @@ def test_deletar_produto_success(auth_token, produto_existente):
     mensagem = ["Registro excluído com sucesso","Nenhum registro excluído"]
     assert body["message"] in mensagem
 
+@pytest.mark.delete
+@pytest.mark.delete_product
 def test_deletar_produto_com_id_inexistente(auth_token, produto_existente):
     headers = {"Authorization": auth_token}
     fake_id = "0000000000000000"
@@ -260,6 +288,8 @@ def test_deletar_produto_com_id_inexistente(auth_token, produto_existente):
     mensagem = ["Registro excluído com sucesso", "Nenhum registro excluído"]
     assert body["message"] in mensagem
 
+@pytest.mark.delete
+@pytest.mark.delete_product
 def test_deletar_produto_sem_autenticacao(produto_existente):
     headers = {"Authorization": "Token inválido"}
 
@@ -269,6 +299,8 @@ def test_deletar_produto_sem_autenticacao(produto_existente):
     body = response.json()
     assert body["message"] == "Token de acesso ausente, inválido, expirado ou usuário do token não existe mais"
 
+@pytest.mark.delete
+@pytest.mark.delete_product
 def test_deletar_produto_sem_admin(auth_token_no_admin, produto_existente):
     headers = {"Authorization": auth_token_no_admin}
 
