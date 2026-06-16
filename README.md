@@ -73,8 +73,14 @@ pytest tests/produtos/
 pytest tests/login/
 pytest tests/carrinhos/
 
+# Executar um marcador específico
+pytest create
+pytest create_user
+pytest update_product
+pytest login
+
 # Executar com saída detalhada
-pytest -v
+pytest -v 
 
 # Parar na primeira falha
 pytest -x
